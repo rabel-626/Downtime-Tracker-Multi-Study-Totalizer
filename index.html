@@ -1,0 +1,3003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Abel Engineering | Multi-Study Downtime Totalizer</title>
+  <style>
+    :root {
+      --bg: #07070a;
+      --panel: #111116;
+      --panel-soft: #191921;
+      --panel-deep: #0b0a10;
+      --text: #f7f5fb;
+      --muted: #aaa6b4;
+      --border: rgba(196,181,253,0.22);
+      --border-strong: rgba(196,181,253,0.44);
+      --white: #ffffff;
+      --abel-lilac: #c4b5fd;
+      --abel-violet: #a855f7;
+      --abel-purple: #8b5cf6;
+      --abel-electric: #7c3aed;
+      --abel-deep: #5b21b6;
+      --mpg-pink: var(--abel-lilac);
+      --mpg-red: var(--abel-violet);
+      --mpg-orange: var(--abel-purple);
+      --mpg-yellow: #ddd6fe;
+      --mpg-green: var(--abel-violet);
+      --mpg-teal: var(--abel-electric);
+      --mpg-blue: var(--abel-deep);
+      --danger: #ef4444;
+      --success: #22c55e;
+      --warn: #f59e0b;
+      --radius: 18px;
+      --shadow: 0 20px 52px rgba(0,0,0,0.54), 0 0 36px rgba(124,58,237,0.08);
+    }
+
+    * { box-sizing: border-box; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+      background:
+        linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px),
+        radial-gradient(circle at top left, rgba(168, 85, 247, 0.24), transparent 34rem),
+        radial-gradient(circle at top right, rgba(91, 33, 182, 0.26), transparent 34rem),
+        radial-gradient(circle at bottom left, rgba(124, 58, 237, 0.12), transparent 30rem),
+        var(--bg);
+      background-size: 40px 40px, 40px 40px, auto, auto, auto, auto;
+      color: var(--text);
+    }
+
+    .page-wrap { width: min(1260px, calc(100% - 34px)); margin: 0 auto; padding: 26px 0 42px; }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(196,181,253,0.34);
+      border-radius: 28px;
+      background:
+        linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
+        var(--panel-deep);
+      box-shadow: var(--shadow);
+      padding: 24px 28px 26px;
+      margin-bottom: 20px;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.08) 24%, transparent 42%),
+        radial-gradient(circle at 20% 0%, rgba(168, 85, 247, 0.20), transparent 26rem),
+        radial-gradient(circle at 78% 0%, rgba(91, 33, 182, 0.20), transparent 28rem);
+      pointer-events: none;
+    }
+
+    .hero-inner { position: relative; z-index: 1; display: grid; grid-template-columns: 210px 1fr; gap: 26px; align-items: center; }
+    .logo-card {
+      background: #050507;
+      color: #fff;
+      border: 1px solid rgba(196,181,253,0.32);
+      border-radius: 20px;
+      padding: 0;
+      min-height: 135px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 14px 34px rgba(0,0,0,0.46), 0 0 24px rgba(124,58,237,0.14);
+    }
+    .logo-card img {
+      width: 100%;
+      height: 100%;
+      min-height: 168px;
+      object-fit: cover;
+      display: block;
+    }
+    .title-block { min-width: 0; text-align: center; }
+    .eyebrow { margin: 0 0 8px; color: var(--muted); font-size: 13px; letter-spacing: 0.34em; text-transform: uppercase; font-weight: 800; }
+    h1 { margin: 0; font-size: clamp(36px, 6vw, 74px); line-height: 0.94; letter-spacing: -0.055em; font-weight: 950; text-transform: uppercase; }
+    .title-gradient { background: linear-gradient(90deg, #f5f3ff, var(--abel-lilac) 28%, var(--abel-violet) 64%, var(--abel-electric)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .subtitle { margin: 16px auto 0; max-width: 780px; color: #d4d4d8; font-size: 16px; line-height: 1.45; text-align: center; }
+    .mpg-rule { height: 6px; width: 100%; margin: 18px 0; border-radius: 999px; background: linear-gradient(90deg, transparent, var(--abel-deep) 12%, var(--abel-violet) 50%, var(--abel-deep) 88%, transparent); box-shadow: 0 0 20px rgba(124,58,237,0.38); }
+
+    .box {
+      background: linear-gradient(180deg, rgba(255,255,255,0.065), rgba(255,255,255,0.025)), var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+      margin-bottom: 18px;
+    }
+    .box-header { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 14px; flex-wrap: wrap; }
+    .box-title { text-align: left; }
+    .box h2 { margin: 0; font-size: 17px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--white); }
+    .box-subtitle { margin: 5px 0 0; color: var(--muted); font-size: 13px; line-height: 1.4; }
+    .button-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: flex-end; }
+    button, .file-button {
+      border: 1px solid rgba(255,255,255,0.20);
+      border-radius: 12px;
+      padding: 10px 14px;
+      color: #fff;
+      background: #24262b;
+      cursor: pointer;
+      font-weight: 800;
+      transition: transform 0.08s ease, filter 0.16s ease, background 0.16s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+    button:hover, .file-button:hover { filter: brightness(1.12); background: #30333a; }
+    button:active, .file-button:active { transform: translateY(1px); }
+    button.primary, .file-button.primary { background: linear-gradient(135deg, var(--mpg-green), var(--mpg-teal), var(--mpg-blue)); border: 0; }
+    button.export { background: linear-gradient(135deg, var(--mpg-blue), var(--mpg-teal)); }
+    button.copy { background: linear-gradient(135deg, var(--mpg-pink), var(--mpg-orange)); }
+    button.danger { background: rgba(239,68,68,0.18); border-color: rgba(239,68,68,0.48); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; filter: grayscale(0.2); }
+    input[type="file"] { display: none; }
+
+    .drop-zone-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(260px, 1fr));
+      gap: 14px;
+      align-items: stretch;
+    }
+    .drop-zone {
+      border: 2px dashed rgba(255,255,255,0.32);
+      border-radius: 22px;
+      padding: 34px 20px;
+      background: rgba(255,255,255,0.035);
+      text-align: center;
+      transition: border-color 0.16s ease, background 0.16s ease, transform 0.12s ease;
+      min-height: 210px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .drop-zone.drag-over { border-color: var(--mpg-teal); background: rgba(124,58,237,0.12); transform: scale(1.004); }
+    .folder-drop-zone.drag-over { border-color: var(--mpg-yellow); background: rgba(248,197,28,0.12); }
+    .drop-zone-grid-note { grid-column: 1 / -1; }
+    @media (max-width: 860px) { .drop-zone-grid { grid-template-columns: 1fr; } }
+    .drop-title { font-size: 24px; font-weight: 950; letter-spacing: -0.02em; margin-bottom: 8px; }
+    .drop-note { color: #d4d4d8; line-height: 1.45; margin-bottom: 16px; }
+    .drop-warning { color: #fed7aa; font-size: 13px; margin-top: 12px; font-weight: 750; }
+
+    .tag-filter-panel {
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.035);
+      padding: 14px;
+      margin: 0 0 16px;
+    }
+    .tag-filter-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .tag-filter-title {
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 950;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+    .tag-filter-status {
+      color: #d4d4d8;
+      font-size: 13px;
+      font-weight: 800;
+      text-align: right;
+    }
+    .tag-filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 9px;
+    }
+    .tag-filter-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.045);
+      padding: 9px 10px;
+      color: #e5e7eb;
+      cursor: pointer;
+      user-select: none;
+    }
+    .tag-filter-item:hover { background: rgba(255,255,255,0.075); }
+    .tag-filter-item input {
+      width: auto;
+      margin-top: 2px;
+      accent-color: var(--mpg-teal);
+      flex: 0 0 auto;
+    }
+    .tag-filter-code {
+      color: #ffffff;
+      font-weight: 950;
+      line-height: 1.2;
+    }
+    .tag-filter-meta {
+      color: #a1a1aa;
+      font-size: 12px;
+      margin-top: 3px;
+      line-height: 1.25;
+    }
+
+    .tag-group-panel {
+      border: 1px solid rgba(168,85,247,0.34);
+      border-radius: 16px;
+      background: rgba(168,85,247,0.052);
+      padding: 14px;
+      margin: 0 0 16px;
+    }
+    .tag-group-controls {
+      display: grid;
+      grid-template-columns: minmax(260px, 1fr) repeat(3, auto);
+      gap: 10px;
+      align-items: center;
+      margin: 12px 0;
+    }
+    .tag-group-name-entry {
+      display: grid;
+      grid-template-columns: auto minmax(180px, 1fr);
+      gap: 8px;
+      align-items: center;
+    }
+    .tag-group-name-entry span,
+    .tag-group-field-label {
+      color: #d4d4d8;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .tag-group-controls input[type="text"] {
+      width: 100%;
+      border-radius: 11px;
+      border: 1px solid rgba(255,255,255,0.20);
+      background: rgba(255,255,255,0.075);
+      color: #fff;
+      padding: 10px 11px;
+      font: inherit;
+      outline: none;
+      text-align: center;
+    }
+
+    .tag-group-mode-row {
+      display: grid;
+      grid-template-columns: minmax(200px, 0.35fr) minmax(260px, 1fr);
+      gap: 10px;
+      align-items: center;
+      margin: 0 0 12px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 10px;
+      background: rgba(255,255,255,0.035);
+    }
+    .tag-group-mode-row label {
+      color: #d4d4d8;
+      font-size: 11px;
+      font-weight: 850;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-align: center;
+    }
+    .tag-group-mode-row select {
+      width: 100%;
+      border-radius: 11px;
+      border: 1px solid rgba(255,255,255,0.20);
+      background: rgba(255,255,255,0.075);
+      color: #fff;
+      padding: 10px 11px;
+      font: inherit;
+      outline: none;
+      text-align: center;
+    }
+    .tag-group-mode-row select option { color: #111; }
+    .tag-group-list { display: grid; gap: 10px; }
+    .tag-group-row {
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.045);
+      padding: 11px;
+    }
+    .tag-group-row.drag-over {
+      border-color: var(--mpg-yellow);
+      background: rgba(248,197,28,0.12);
+    }
+    .tag-group-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .tag-group-name {
+      color: #fff;
+      font-weight: 950;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .tag-group-name-wrap {
+      display: grid;
+      grid-template-columns: auto minmax(170px, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+      flex: 1 1 380px;
+    }
+    .tag-group-name-wrap input[type="text"],
+    .tag-group-mode-select {
+      width: 100%;
+      border-radius: 11px;
+      border: 1px solid rgba(255,255,255,0.20);
+      background: rgba(255,255,255,0.075);
+      color: #fff;
+      padding: 9px 10px;
+      font: inherit;
+      outline: none;
+      text-align: center;
+    }
+    .tag-group-mode-select { min-width: 240px; }
+    .tag-group-mode-select option { color: #111; }
+    .tag-chip-list { display: flex; flex-wrap: wrap; gap: 8px; min-height: 34px; }
+    .tag-chip {
+      display: inline-grid;
+      grid-template-columns: 26px minmax(84px, 1fr) auto;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 12px;
+      background: rgba(0,0,0,0.18);
+      color: #fff;
+      padding: 6px 8px;
+      font-weight: 850;
+      font-size: 12px;
+      cursor: grab;
+      min-width: 170px;
+    }
+    .tag-chip button {
+      width: 22px;
+      height: 22px;
+      min-width: 22px;
+      padding: 0;
+      border-radius: 999px;
+      font-size: 13px;
+      line-height: 1;
+    }
+    .tag-chip-code { text-align: left; color: #ffffff; font-weight: 950; }
+    .tag-chip input[type="checkbox"] {
+      justify-self: end;
+      width: 18px;
+      height: 18px;
+      accent-color: var(--mpg-teal);
+      cursor: pointer;
+    }
+    .tag-drop-empty {
+      color: #a1a1aa;
+      font-size: 12px;
+      font-weight: 750;
+      padding: 8px 0;
+    }
+    .tag-filter-item[draggable="true"] { cursor: grab; }
+    .tag-filter-grouped {
+      color: #fbcfe8;
+      font-size: 11px;
+      font-weight: 850;
+      margin-top: 4px;
+    }
+    @media (max-width: 900px) { .tag-group-controls, .tag-group-mode-row, .tag-group-name-entry, .tag-group-name-wrap { grid-template-columns: 1fr; } }
+
+
+    .study-slicer-panel {
+      border: 1px solid rgba(124,58,237,0.32);
+      border-radius: 16px;
+      background: rgba(124,58,237,0.055);
+      padding: 14px;
+      margin: 0 0 16px;
+    }
+    .study-slicer-grid {
+      display: grid;
+      grid-template-columns: minmax(260px, 1.2fr) repeat(3, minmax(140px, 0.6fr));
+      gap: 12px;
+      align-items: end;
+    }
+    .study-slicer-panel label {
+      display: block;
+      color: #d4d4d8;
+      font-size: 11px;
+      font-weight: 850;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+    .study-slicer-panel select {
+      width: 100%;
+      border-radius: 11px;
+      border: 1px solid rgba(255,255,255,0.20);
+      background: rgba(255,255,255,0.075);
+      color: #fff;
+      padding: 10px 11px;
+      font: inherit;
+      outline: none;
+      text-align: center;
+    }
+    .study-slicer-panel select option { color: #111; }
+    .slicer-metric {
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.045);
+      padding: 9px 10px;
+      text-align: center;
+      min-height: 56px;
+    }
+    .slicer-metric-label {
+      color: #a1a1aa;
+      font-size: 10px;
+      font-weight: 850;
+      letter-spacing: 0.055em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .slicer-metric-value {
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 950;
+    }
+    @media (max-width: 900px) { .study-slicer-grid { grid-template-columns: 1fr; } }
+
+    .status {
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.055);
+      padding: 12px 13px;
+      color: #f4f4f5;
+      font-weight: 750;
+      line-height: 1.35;
+      margin-top: 14px;
+    }
+    .status.good { border-color: rgba(34,197,94,0.45); background: rgba(34,197,94,0.10); color: #bbf7d0; }
+    .status.warn { border-color: rgba(245,130,32,0.48); background: rgba(245,130,32,0.12); color: #fed7aa; }
+    .status.bad { border-color: rgba(239,68,68,0.48); background: rgba(239,68,68,0.12); color: #fecaca; }
+
+    .summary-grid { display: grid; grid-template-columns: repeat(5, minmax(150px, 1fr)); gap: 13px; margin-bottom: 16px; }
+    .metric { border-radius: 16px; border: 1px solid rgba(255,255,255,0.14); background: linear-gradient(145deg, rgba(255,255,255,0.085), rgba(255,255,255,0.03)); padding: 13px; min-height: 82px; }
+    .metric-label { margin: 0 0 8px; color: var(--muted); font-size: 11px; text-transform: uppercase; font-weight: 850; letter-spacing: 0.05em; text-align: center; }
+    .metric-value { font-size: 22px; font-weight: 950; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; text-align: center; }
+
+    .chart-wrap { border: 1px solid rgba(255,255,255,0.14); border-radius: 16px; background: rgba(0,0,0,0.18); padding: 14px; overflow-x: auto; }
+    #paretoSvg { width: 100%; min-width: 900px; height: 460px; display: block; }
+
+    .table-scroll { overflow-x: auto; border-radius: 14px; border: 1px solid rgba(255,255,255,0.11); }
+    table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+    th, td { border-top: 1px solid rgba(255,255,255,0.10); padding: 10px 9px; text-align: center; vertical-align: middle; font-size: 13px; }
+    th { background: rgba(255,255,255,0.075); color: #fff; font-size: 11px; letter-spacing: 0.07em; text-transform: uppercase; position: sticky; top: 0; z-index: 1; }
+    td { color: #e5e7eb; }
+    td.number { font-variant-numeric: tabular-nums; font-weight: 850; color: #fff; }
+    .left { text-align: left !important; }
+    .expand-cell { width: 72px; }
+    .expand-btn { min-width: 46px; padding: 7px 9px; border-radius: 999px; background: rgba(255,255,255,0.075); }
+    .detail-row td { background: rgba(255,255,255,0.035); padding: 0; }
+    .detail-panel { padding: 14px; text-align: left; }
+    .nested-title { font-weight: 950; color: #fff; margin: 0 0 10px; letter-spacing: 0.04em; text-transform: uppercase; font-size: 12px; }
+    .nested-table { min-width: 780px; border: 1px solid rgba(255,255,255,0.10); border-radius: 12px; overflow: hidden; }
+    .nested-table th, .nested-table td { font-size: 12px; padding: 8px; }
+    .empty-state { text-align: center; color: var(--muted); font-weight: 750; padding: 22px; }
+    .hidden { display: none !important; }
+
+    .table-toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin: 14px 0 10px;
+      flex-wrap: wrap;
+    }
+    .table-toggle-title {
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 950;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+    .table-toggle-note {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+      margin-left: 8px;
+      text-transform: none;
+      letter-spacing: normal;
+    }
+    .table-toggle-btn {
+      min-width: 150px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.075);
+    }
+    .table-collapsed { display: none !important; }
+    .remove-study-btn {
+      background: rgba(239,68,68,0.16);
+      border-color: rgba(239,68,68,0.46);
+      color: #fecaca;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .study-slicer-controls {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(160px, 1fr));
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 12px;
+    }
+    .study-slicer-metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(140px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+    @media (max-width: 900px) {
+      .study-slicer-controls, .study-slicer-metric-grid { grid-template-columns: 1fr; }
+    }
+
+
+
+    .pareto-click-hint {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+      text-align: center;
+    }
+
+    .pareto-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0,0,0,0.68);
+      backdrop-filter: blur(5px);
+    }
+
+    .pareto-modal {
+      width: min(720px, 100%);
+      max-height: min(84vh, 780px);
+      overflow: auto;
+      border: 1px solid rgba(255,255,255,0.24);
+      border-radius: 22px;
+      background:
+        linear-gradient(145deg, rgba(255,255,255,0.10), rgba(255,255,255,0.035)),
+        var(--panel-deep);
+      box-shadow: 0 28px 70px rgba(0,0,0,0.60);
+      color: var(--text);
+    }
+
+    .pareto-modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.13);
+    }
+
+    .pareto-modal-kicker {
+      margin: 0 0 5px;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 900;
+    }
+
+    .pareto-modal-title {
+      margin: 0;
+      color: #ffffff;
+      font-size: 24px;
+      line-height: 1.1;
+      font-weight: 950;
+      letter-spacing: -0.02em;
+    }
+
+    .pareto-modal-close {
+      width: 38px;
+      height: 38px;
+      min-width: 38px;
+      padding: 0;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.085);
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .pareto-modal-body { padding: 16px 20px 20px; }
+
+    .pareto-description-box {
+      border: 1px solid rgba(124,58,237,0.34);
+      border-radius: 16px;
+      background: rgba(124,58,237,0.075);
+      padding: 13px 14px;
+      color: #e5e7eb;
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+
+    .pareto-modal-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(110px, 1fr));
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .pareto-modal-metric {
+      border: 1px solid rgba(255,255,255,0.13);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.045);
+      padding: 10px;
+      text-align: center;
+    }
+
+    .pareto-modal-metric-label {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 850;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .pareto-modal-metric-value {
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 950;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .pareto-source-code-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 8px;
+    }
+
+    .pareto-source-code-chip {
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      color: #ffffff;
+      padding: 5px 9px;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .pareto-modal-section-title {
+      margin: 14px 0 8px;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 950;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .pareto-study-list-mini {
+      margin: 0;
+      padding-left: 18px;
+      color: #d4d4d8;
+      line-height: 1.45;
+      font-size: 13px;
+    }
+
+    .pareto-study-list-mini li + li { margin-top: 4px; }
+
+    .pareto-chart-hotspot { cursor: pointer; }
+    .pareto-chart-hotspot:hover { filter: brightness(1.12); }
+
+    @media (max-width: 680px) {
+      .pareto-modal-metrics { grid-template-columns: repeat(2, minmax(110px, 1fr)); }
+      .pareto-modal-title { font-size: 21px; }
+    }
+
+
+    .print-only { display: none; }
+    .print-study-list {
+      margin-top: 12px;
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 14px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.025);
+    }
+    .print-study-title {
+      color: #ffffff;
+      font-weight: 950;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-size: 12px;
+      padding: 8px 10px;
+      background: rgba(255,255,255,0.075);
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+    }
+    .print-study-list table { width: 100%; min-width: 0; border-collapse: collapse; }
+    .print-study-list th,
+    .print-study-list td { font-size: 10px; padding: 5px 6px; }
+    .print-study-list .left { text-align: left !important; }
+    .print-study-muted { color: var(--muted); font-size: 10px; font-weight: 750; text-align: center; padding: 6px 8px; border-top: 1px solid rgba(255,255,255,0.10); }
+
+    .print-report-header {
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 16px;
+      background: linear-gradient(145deg, rgba(168,85,247,0.16), rgba(124,58,237,0.10), rgba(91,33,182,0.12));
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .print-report-title {
+      margin: 0;
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 950;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .print-report-meta {
+      margin-top: 5px;
+      color: #d4d4d8;
+      font-size: 10px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+    .print-pdf-mode #paretoTableWrap { display: block !important; }
+
+
+
+    .calc-note {
+      margin: 0 0 12px;
+      color: #d4d4d8;
+      font-size: 13px;
+      line-height: 1.45;
+      text-align: center;
+    }
+    .calc-total-row td {
+      background: rgba(124,58,237,0.13);
+      color: #ffffff;
+      font-weight: 950;
+      border-top: 2px solid rgba(124,58,237,0.42);
+    }
+
+    @media (max-width: 980px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .logo-card { max-width: 230px; margin: 0 auto; min-height: 110px; }
+      .summary-grid { grid-template-columns: repeat(2, minmax(140px, 1fr)); }
+      .button-row { justify-content: flex-start; }
+    }
+
+    @media (max-width: 580px) {
+      .page-wrap { width: min(100% - 20px, 1260px); padding-top: 12px; }
+      .hero { padding: 18px; border-radius: 20px; }
+      .summary-grid { grid-template-columns: 1fr; }
+      button, .file-button { width: 100%; }
+      .drop-title { font-size: 20px; }
+    }
+
+    @page { size: landscape; margin: 0.35in; }
+
+    @media print {
+      * { print-color-adjust: exact !important; -webkit-print-color-adjust: exact !important; }
+      html, body { background: #050505 !important; color: #f4f4f5 !important; }
+      .no-print, .hero, #loadSection, #studySection, #calculationSection, #studySlicerPanel, #tagFilterPanel, #tagGroupPanel { display: none !important; }
+      .print-only { display: block !important; }
+      .page-wrap { width: 100% !important; max-width: none !important; padding: 0 !important; }
+      #paretoSection { display: block !important; }
+      .box { box-shadow: none !important; break-inside: avoid; page-break-inside: avoid; margin: 0 !important; border-color: rgba(255,255,255,0.28) !important; }
+      .box-header .button-row { display: none !important; }
+      .summary-grid { grid-template-columns: repeat(5, minmax(0, 1fr)) !important; gap: 7px !important; }
+      #paretoSvg { width: 100% !important; min-width: 0 !important; height: 340px !important; display: block !important; }
+      #paretoTableWrap, #paretoTableWrap.table-collapsed { display: block !important; margin-top: 10px !important; }
+      #paretoTable { break-inside: auto; page-break-inside: auto; }
+      table { min-width: 0 !important; table-layout: auto !important; }
+      th, td { font-size: 8px !important; padding: 3px 4px !important; white-space: normal !important; word-break: break-word !important; }
+      th { background: rgba(255,255,255,0.16) !important; color: #ffffff !important; }
+      tr { break-inside: avoid; page-break-inside: avoid; }
+      .metric { min-height: 54px !important; padding: 7px !important; background: rgba(255,255,255,0.07) !important; }
+      .metric-label { font-size: 8px !important; margin-bottom: 4px !important; }
+      .metric-value { font-size: 15px !important; }
+      .box-header { margin-bottom: 8px !important; }
+      .box h2 { font-size: 14px !important; }
+      .box-subtitle { font-size: 9px !important; margin-top: 2px !important; }
+      .chart-wrap { margin-top: 8px !important; padding: 6px !important; overflow: visible !important; border-color: rgba(255,255,255,0.20) !important; }
+      .print-study-list { margin-top: 8px !important; break-inside: avoid; page-break-inside: avoid; }
+      .print-study-title { font-size: 9px !important; padding: 5px 6px !important; }
+      .print-study-muted { font-size: 8px !important; padding: 4px 5px !important; }
+      .detail-row, .expand-cell { display: none !important; }
+      .table-scroll { overflow: visible !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page-wrap">
+    <section class="hero no-print">
+      <div class="hero-inner">
+        <div class="logo-card"><img src="data:image/webp;base64,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" alt="Abel Engineering logo" /></div>
+        <div class="title-block">
+          <p class="eyebrow">Downtime Analytics</p>
+          <h1><span class="title-gradient">Multi-Study</span><br />Totalizer</h1>
+          <div class="mpg-rule"></div>
+          <p class="subtitle">Drop saved downtime-study JSON files into this standalone app to build a combined reason-code Pareto and preserve study timing, location, date, shift, line, and production reference data.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="loadSection" class="box no-print">
+      <div class="box-header">
+        <div class="box-title">
+          <h2>Load JSON Study Files</h2>
+          <p class="box-subtitle">Drag and drop saved downtime-study JSON files only. Non-JSON files are rejected.</p>
+        </div>
+        <div class="button-row">
+          <label for="jsonInput" class="file-button primary">Select JSON Files</label>
+          <input id="jsonInput" type="file" accept=".json,application/json" multiple />
+          <label for="folderInput" class="file-button export">Load All JSONs from Folder</label>
+          <input id="folderInput" type="file" accept=".json,application/json" webkitdirectory directory multiple />
+          <button id="clearBtn" class="danger" type="button">Clear Loaded Data</button>
+        </div>
+      </div>
+      <div id="dropZone" class="drop-zone-grid">
+        <div id="jsonDropZone" class="drop-zone">
+          <div class="drop-title">Drop JSON files here</div>
+          <div class="drop-note">Use this area for one or more saved downtime-study .json files.</div>
+          <label for="jsonInputSecondary" class="file-button primary">Browse for JSON Files</label>
+          <input id="jsonInputSecondary" type="file" accept=".json,application/json" multiple />
+        </div>
+        <div id="folderDropZone" class="drop-zone folder-drop-zone">
+          <div class="drop-title">Drop a study folder here</div>
+          <div class="drop-note">Use this area for a parent folder. The app will scan subfolders and load every readable .json study file.</div>
+          <label for="folderInputSecondary" class="file-button export">Browse for Study Folder</label>
+          <input id="folderInputSecondary" type="file" accept=".json,application/json" webkitdirectory directory multiple />
+        </div>
+        <div class="drop-warning drop-zone-grid-note">Accepted input: .json files only. Existing loaded files stay active until cleared. Folder drag-and-drop works best in Chrome or Edge. If your browser blocks folder drops, use Browse for Study Folder.</div>
+      </div>
+      <div id="loadStatus" class="status">No JSON studies loaded yet.</div>
+    </section>
+
+    <section id="paretoSection" class="box">
+      <div class="box-header">
+        <div class="box-title">
+          <h2>Combined Downtime Pareto</h2>
+          <p class="box-subtitle">Total downtime by reason code across every loaded study. Expand a code row to see the timing records behind that total.</p>
+        </div>
+        <div class="button-row no-print">
+          <button id="exportExcelBtn" class="export" type="button" disabled>Export Excel</button>
+        </div>
+      </div>
+
+      <div id="paretoPrintHeader" class="print-only print-report-header">
+        <p class="print-report-title">Downtime Pareto PDF Report</p>
+        <div id="paretoPrintMeta" class="print-report-meta">Load studies to generate report details.</div>
+      </div>
+
+      <div class="summary-grid">
+        <div class="metric"><div class="metric-label">Studies Loaded</div><div id="metricStudies" class="metric-value">0</div></div>
+        <div class="metric"><div class="metric-label">Downtime Events</div><div id="metricEvents" class="metric-value">0</div></div>
+        <div class="metric"><div class="metric-label">Total Downtime</div><div id="metricDowntime" class="metric-value">0:00:00</div></div>
+        <div class="metric"><div class="metric-label">Observed Time</div><div id="metricObserved" class="metric-value">0:00:00</div></div>
+        <div class="metric"><div class="metric-label">Downtime %</div><div id="metricPercent" class="metric-value">0.0%</div></div>
+      </div>
+
+      <div id="studySlicerPanel" class="study-slicer-panel no-print">
+        <div class="tag-filter-header">
+          <div>
+            <div class="tag-filter-title">Pareto Study Slicer</div>
+            <p class="box-subtitle" style="margin: 4px 0 0;">Choose all loaded studies or isolate one JSON file to see that study's individual contribution to the Pareto table and chart.</p>
+          </div>
+        </div>
+        <div class="study-slicer-controls">
+          <div>
+            <label for="studyLocationFilter">Location Filter</label>
+            <select id="studyLocationFilter" disabled>
+              <option value="ALL">All locations</option>
+            </select>
+          </div>
+          <div>
+            <label for="studyShiftFilter">Shift Filter</label>
+            <select id="studyShiftFilter" disabled>
+              <option value="ALL">All shifts</option>
+            </select>
+          </div>
+          <div>
+            <label for="studySortSelect">Study Sort</label>
+            <select id="studySortSelect" disabled>
+              <option value="LOAD">Load order</option>
+              <option value="LOCATION">Location then shift</option>
+              <option value="SHIFT">Shift then location</option>
+              <option value="DATE">Date then location</option>
+            </select>
+          </div>
+        </div>
+        <div class="study-slicer-grid">
+          <div>
+            <label for="studySlicerSelect">Pareto Source</label>
+            <select id="studySlicerSelect" disabled>
+              <option value="ALL">All matching studies</option>
+            </select>
+          </div>
+          <div class="slicer-metric"><div class="slicer-metric-label">View Events</div><div id="slicerMetricEvents" class="slicer-metric-value">0</div></div>
+          <div class="slicer-metric"><div class="slicer-metric-label">View Downtime</div><div id="slicerMetricDowntime" class="slicer-metric-value">0:00:00</div></div>
+          <div class="slicer-metric"><div class="slicer-metric-label">View Share</div><div id="slicerMetricShare" class="slicer-metric-value">0.0%</div></div>
+        </div>
+        <div class="study-slicer-metric-grid">
+          <div class="slicer-metric"><div class="slicer-metric-label">Optimum Production Count</div><div id="slicerMetricOptimum" class="slicer-metric-value">0</div></div>
+          <div class="slicer-metric"><div class="slicer-metric-label">Production Loss Count</div><div id="slicerMetricLoss" class="slicer-metric-value">0</div></div>
+          <div class="slicer-metric"><div class="slicer-metric-label">Utilization from Production</div><div id="slicerMetricUtilization" class="slicer-metric-value">0.0%</div></div>
+        </div>
+      </div>
+
+      <div id="tagFilterPanel" class="tag-filter-panel no-print">
+        <div class="tag-filter-header">
+          <div>
+            <div class="tag-filter-title">Pareto Reason-Code Filter</div>
+            <p class="box-subtitle" style="margin: 4px 0 0;">Check the downtime tags to include in the Pareto. Unchecked tags stay loaded but are excluded from the chart, Pareto table, and Pareto export totals.</p>
+          </div>
+          <div class="button-row">
+            <button id="selectAllTagsBtn" type="button" disabled>Select All Tags</button>
+            <button id="clearAllTagsBtn" class="danger" type="button" disabled>Clear All Tags</button>
+          </div>
+        </div>
+        <div id="tagFilterStatus" class="tag-filter-status">No tags loaded.</div>
+        <div id="tagFilterGrid" class="tag-filter-grid" style="margin-top: 10px;"></div>
+      </div>
+
+      <div id="tagGroupPanel" class="tag-group-panel no-print">
+        <div class="tag-filter-header">
+          <div>
+            <div class="tag-filter-title">Pareto Tag Grouping</div>
+            <p class="box-subtitle" style="margin: 4px 0 0;">Create a group row, then drag reason-code tags into it. Grouped tags are removed from the main reason-code filter and are controlled inside their grouping row.</p>
+          </div>
+          <div class="button-row">
+            <label for="tagGroupImportInput" class="file-button">Import Group CSV</label>
+            <input id="tagGroupImportInput" type="file" accept=".csv,text/csv" />
+            <button id="exportTagGroupsBtn" class="export" type="button" disabled>Export Group CSV</button>
+            <button id="clearTagGroupsBtn" class="danger" type="button" disabled>Clear Groups</button>
+          </div>
+        </div>
+        <div class="tag-group-controls">
+          <label class="tag-group-name-entry" for="tagGroupNameInput"><span>Group Name:</span><input id="tagGroupNameInput" type="text" placeholder="New group name, example: Robot / Automation" /></label>
+          <button id="addTagGroupBtn" class="primary" type="button">Add Grouping Row</button>
+          <button id="addCheckedToGroupBtn" type="button" disabled>Add Checked Ungrouped Tags to Last Group</button>
+          <button id="removeEmptyGroupsBtn" type="button" disabled>Remove Empty Groups</button>
+        </div>
+        <div id="tagGroupStatus" class="tag-filter-status">No tag groups created.</div>
+        <div id="tagGroupList" class="tag-group-list" style="margin-top: 10px;"></div>
+      </div>
+
+      <div class="chart-wrap">
+        <svg id="paretoSvg" role="img" aria-label="Combined downtime Pareto chart"></svg>
+      </div>
+      <div class="pareto-click-hint no-print">Click a Pareto bar, tag label, or cumulative point to view the imported reason-code description.</div>
+
+      <div class="table-toggle-row no-print">
+        <div class="table-toggle-title">Pareto Table <span id="paretoTableSummary" class="table-toggle-note">Collapsed by default</span></div>
+        <div class="button-row">
+          <button id="printParetoBtn" class="copy" type="button" disabled>Print Pareto PDF</button>
+          <button id="toggleParetoTableBtn" class="table-toggle-btn" type="button" data-table-toggle="paretoTableWrap">Expand Table</button>
+        </div>
+      </div>
+      <div id="paretoTableWrap" class="table-scroll table-collapsed" style="margin-top: 16px;">
+        <table id="paretoTable">
+          <thead>
+            <tr>
+              <th class="expand-cell">Details</th>
+              <th>Rank</th>
+              <th>Reason Code</th>
+              <th class="left">Code Description</th>
+              <th>Events</th>
+              <th>Downtime</th>
+              <th>Downtime Minutes</th>
+              <th>% of Downtime</th>
+              <th>Cumulative %</th>
+              <th>Studies Affected</th>
+            </tr>
+          </thead>
+          <tbody id="paretoBody"><tr><td colspan="10" class="empty-state">Load JSON files or select at least one reason-code tag to generate the Pareto breakdown.</td></tr></tbody>
+        </table>
+      </div>
+
+      <div id="printStudyList" class="print-only print-study-list">
+        <div class="print-study-title">Studies Included in This Pareto</div>
+        <table>
+          <thead>
+            <tr>
+              <th class="left">Study Name</th>
+              <th>Date</th>
+              <th>Location</th>
+              <th>Line / Machine</th>
+              <th>Shift</th>
+              <th>Downtime</th>
+            </tr>
+          </thead>
+          <tbody id="printStudyBody"><tr><td colspan="6" class="empty-state">No studies loaded.</td></tr></tbody>
+        </table>
+        <div id="printStudyNote" class="print-study-muted">Only loaded studies are listed. Reason-code filters apply to the Pareto totals above.</div>
+      </div>
+    </section>
+
+    <section id="calculationSection" class="box">
+      <div class="box-header">
+        <div class="box-title">
+          <h2>Data Calculation Tab</h2>
+          <p class="box-subtitle">Production calculation view by loaded file using production speed, observed time, and downtime totals.</p>
+        </div>
+      </div>
+      <p class="calc-note">Calculated as: projected production = production speed × observed hours. Production loss = production speed × downtime hours. Net available production = projected production − production loss.</p>
+      <div class="table-toggle-row no-print">
+        <div class="table-toggle-title">Production Calculation Table <span id="calculationTableSummary" class="table-toggle-note">Collapsed by default</span></div>
+        <button id="toggleCalculationTableBtn" class="table-toggle-btn" type="button" data-table-toggle="calculationTableWrap">Expand Table</button>
+      </div>
+      <div id="calculationTableWrap" class="table-scroll table-collapsed">
+        <table id="calculationTable">
+          <thead>
+            <tr>
+              <th>File</th>
+              <th>Location</th>
+              <th>Date</th>
+              <th>Shift</th>
+              <th>Line / Machine</th>
+              <th>Production Speed</th>
+              <th>Observed Time</th>
+              <th>Observed Hours</th>
+              <th>Downtime Total</th>
+              <th>Downtime Hours</th>
+              <th>Projected Production</th>
+              <th>Production Loss</th>
+              <th>Net Available Production</th>
+              <th>Downtime %</th>
+            </tr>
+          </thead>
+          <tbody id="calculationBody"><tr><td colspan="14" class="empty-state">No studies loaded.</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="studySection" class="box">
+      <div class="box-header">
+        <div class="box-title">
+          <h2>Loaded Study Reference</h2>
+          <p class="box-subtitle">Expandable reference table preserving location, date, shift, line, product, production speed, and timing records from each loaded JSON file.</p>
+        </div>
+      </div>
+      <div class="table-toggle-row no-print">
+        <div class="table-toggle-title">Loaded Study Reference Table <span id="studyTableSummary" class="table-toggle-note">Collapsed by default</span></div>
+        <button id="toggleStudyTableBtn" class="table-toggle-btn" type="button" data-table-toggle="studyTableWrap">Expand Table</button>
+      </div>
+      <div id="studyTableWrap" class="table-scroll table-collapsed">
+        <table id="studyTable">
+          <thead>
+            <tr>
+              <th class="expand-cell">Details</th>
+              <th>File</th>
+              <th>Location</th>
+              <th>Date</th>
+              <th>Shift</th>
+              <th>Line / Machine</th>
+              <th>Product</th>
+              <th>Observer</th>
+              <th>Study Time</th>
+              <th>Time Source</th>
+              <th>Total Downtime</th>
+              <th>Downtime %</th>
+              <th>Production Speed</th>
+              <th>Projected Units</th>
+              <th>Lost Units</th>
+              <th class="no-print">Remove</th>
+            </tr>
+          </thead>
+          <tbody id="studyBody"><tr><td colspan="16" class="empty-state">No studies loaded.</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+
+
+  <div id="paretoDescriptionModal" class="pareto-modal-backdrop hidden no-print" role="dialog" aria-modal="true" aria-labelledby="paretoDescriptionTitle">
+    <div class="pareto-modal">
+      <div class="pareto-modal-header">
+        <div>
+          <p class="pareto-modal-kicker">Pareto Tag Description</p>
+          <h3 id="paretoDescriptionTitle" class="pareto-modal-title">Reason Code</h3>
+        </div>
+        <button id="paretoDescriptionCloseBtn" class="pareto-modal-close" type="button" aria-label="Close description popup">×</button>
+      </div>
+      <div id="paretoDescriptionBody" class="pareto-modal-body"></div>
+    </div>
+  </div>
+
+  <script>
+    'use strict';
+
+    const state = {
+      studies: [],
+      paretoRows: [],
+      expandedCodes: new Set(),
+      expandedStudies: new Set(),
+      excludedCodes: new Set(),
+      selectedStudyId: 'ALL',
+      selectedLocation: 'ALL',
+      selectedShift: 'ALL',
+      studySortMode: 'LOAD',
+      tagGroups: [],
+      draggedTagCode: ''
+    };
+
+    const els = {
+      dropZone: document.getElementById('dropZone'),
+      jsonDropZone: document.getElementById('jsonDropZone'),
+      folderDropZone: document.getElementById('folderDropZone'),
+      loadSection: document.getElementById('loadSection'),
+      jsonInput: document.getElementById('jsonInput'),
+      jsonInputSecondary: document.getElementById('jsonInputSecondary'),
+      folderInput: document.getElementById('folderInput'),
+      folderInputSecondary: document.getElementById('folderInputSecondary'),
+      clearBtn: document.getElementById('clearBtn'),
+      loadStatus: document.getElementById('loadStatus'),
+      exportExcelBtn: document.getElementById('exportExcelBtn'),
+      printParetoBtn: document.getElementById('printParetoBtn'),
+      selectAllTagsBtn: document.getElementById('selectAllTagsBtn'),
+      clearAllTagsBtn: document.getElementById('clearAllTagsBtn'),
+      tagGroupNameInput: document.getElementById('tagGroupNameInput'),
+      addTagGroupBtn: document.getElementById('addTagGroupBtn'),
+      addCheckedToGroupBtn: document.getElementById('addCheckedToGroupBtn'),
+      removeEmptyGroupsBtn: document.getElementById('removeEmptyGroupsBtn'),
+      exportTagGroupsBtn: document.getElementById('exportTagGroupsBtn'),
+      clearTagGroupsBtn: document.getElementById('clearTagGroupsBtn'),
+      tagGroupImportInput: document.getElementById('tagGroupImportInput'),
+      tagGroupStatus: document.getElementById('tagGroupStatus'),
+      tagGroupList: document.getElementById('tagGroupList'),
+      studySlicerSelect: document.getElementById('studySlicerSelect'),
+      studyLocationFilter: document.getElementById('studyLocationFilter'),
+      studyShiftFilter: document.getElementById('studyShiftFilter'),
+      studySortSelect: document.getElementById('studySortSelect'),
+      slicerMetricEvents: document.getElementById('slicerMetricEvents'),
+      slicerMetricDowntime: document.getElementById('slicerMetricDowntime'),
+      slicerMetricShare: document.getElementById('slicerMetricShare'),
+      slicerMetricOptimum: document.getElementById('slicerMetricOptimum'),
+      slicerMetricLoss: document.getElementById('slicerMetricLoss'),
+      slicerMetricUtilization: document.getElementById('slicerMetricUtilization'),
+      paretoTableWrap: document.getElementById('paretoTableWrap'),
+      calculationTableWrap: document.getElementById('calculationTableWrap'),
+      studyTableWrap: document.getElementById('studyTableWrap'),
+      toggleParetoTableBtn: document.getElementById('toggleParetoTableBtn'),
+      toggleCalculationTableBtn: document.getElementById('toggleCalculationTableBtn'),
+      toggleStudyTableBtn: document.getElementById('toggleStudyTableBtn'),
+      paretoTableSummary: document.getElementById('paretoTableSummary'),
+      calculationTableSummary: document.getElementById('calculationTableSummary'),
+      studyTableSummary: document.getElementById('studyTableSummary'),
+      tagFilterGrid: document.getElementById('tagFilterGrid'),
+      tagFilterStatus: document.getElementById('tagFilterStatus'),
+      metricStudies: document.getElementById('metricStudies'),
+      metricEvents: document.getElementById('metricEvents'),
+      metricDowntime: document.getElementById('metricDowntime'),
+      metricObserved: document.getElementById('metricObserved'),
+      metricPercent: document.getElementById('metricPercent'),
+      paretoSvg: document.getElementById('paretoSvg'),
+      paretoDescriptionModal: document.getElementById('paretoDescriptionModal'),
+      paretoDescriptionTitle: document.getElementById('paretoDescriptionTitle'),
+      paretoDescriptionBody: document.getElementById('paretoDescriptionBody'),
+      paretoDescriptionCloseBtn: document.getElementById('paretoDescriptionCloseBtn'),
+      paretoBody: document.getElementById('paretoBody'),
+      studyBody: document.getElementById('studyBody'),
+      calculationBody: document.getElementById('calculationBody'),
+      printStudyBody: document.getElementById('printStudyBody'),
+      printStudyNote: document.getElementById('printStudyNote'),
+      paretoPrintMeta: document.getElementById('paretoPrintMeta')
+    };
+
+    const svgNS = 'http://www.w3.org/2000/svg';
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function normalizeCode(value) {
+      const code = String(value ?? '').trim();
+      return code || 'UNASSIGNED';
+    }
+
+    function parseNumber(value) {
+      if (value === null || value === undefined || value === '') return 0;
+      const n = Number(value);
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function formatDuration(totalSeconds) {
+      const sec = Math.max(0, Math.round(parseNumber(totalSeconds)));
+      const h = Math.floor(sec / 3600);
+      const m = Math.floor((sec % 3600) / 60);
+      const s = sec % 60;
+      return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function formatMinutes(seconds) {
+      return (parseNumber(seconds) / 60).toFixed(1);
+    }
+
+    function formatPercent(value) {
+      return `${(parseNumber(value) * 100).toFixed(1)}%`;
+    }
+
+    function formatNumber(value) {
+      return Math.round(parseNumber(value)).toLocaleString();
+    }
+
+    function parseTimestamp(value) {
+      if (!value) return null;
+      const normalized = String(value).replace(' ', 'T');
+      const date = new Date(normalized);
+      return Number.isFinite(date.getTime()) ? date : null;
+    }
+
+    function secondsBetween(startValue, stopValue) {
+      const start = parseTimestamp(startValue);
+      const stop = parseTimestamp(stopValue);
+      if (!start || !stop) return 0;
+      const seconds = Math.max(0, (stop.getTime() - start.getTime()) / 1000);
+      return Number.isFinite(seconds) ? seconds : 0;
+    }
+
+    function getFirstFilledValue(...values) {
+      return values.find(value => value !== null && value !== undefined && String(value).trim() !== '') ?? '';
+    }
+
+    function parseManualDurationSeconds(value) {
+      if (value === null || value === undefined || String(value).trim() === '') return 0;
+      const raw = String(value).trim();
+      const lower = raw.toLowerCase();
+
+      if (lower.includes(':')) {
+        const parts = lower.split(':').map(part => Number(part.trim()));
+        if (parts.length === 3 && parts.every(Number.isFinite)) {
+          return Math.max(0, (parts[0] * 3600) + (parts[1] * 60) + parts[2]);
+        }
+        if (parts.length === 2 && parts.every(Number.isFinite)) {
+          return Math.max(0, (parts[0] * 3600) + (parts[1] * 60));
+        }
+      }
+
+      const numeric = parseNumber(raw.replace(/[^0-9.\-]/g, ''));
+      if (!numeric) return 0;
+      if (/(hr|hrs|hour|hours)/.test(lower)) return numeric * 3600;
+      if (/(sec|secs|second|seconds)/.test(lower)) return numeric;
+      return numeric * 60;
+    }
+
+    function getStudyObservedInfo(data) {
+      const manualRaw = getFirstFilledValue(
+        data.manualStudyDuration,
+        data.formFields?.manualStudyDuration,
+        data.formFields?.manualStudyDurationControl
+      );
+      const manualSeconds = parseManualDurationSeconds(manualRaw);
+      if (manualSeconds > 0) {
+        return { seconds: manualSeconds, source: 'Manual total', manualRaw };
+      }
+
+      if (Array.isArray(data.studySegments) && data.studySegments.length) {
+        const segmentSeconds = data.studySegments.reduce((sum, seg) => sum + secondsBetween(seg.startTimestamp, seg.stopTimestamp), 0);
+        if (segmentSeconds > 0) return { seconds: segmentSeconds, source: 'Calculated from segments', manualRaw: '' };
+      }
+
+      const eventTimes = (data.events || []).flatMap(event => [parseTimestamp(event.startTimestamp), parseTimestamp(event.stopTimestamp)]).filter(Boolean);
+      if (eventTimes.length >= 2) {
+        const min = new Date(Math.min(...eventTimes.map(d => d.getTime())));
+        const max = new Date(Math.max(...eventTimes.map(d => d.getTime())));
+        return { seconds: Math.max(0, (max.getTime() - min.getTime()) / 1000), source: 'Calculated from events', manualRaw: '' };
+      }
+      return { seconds: 0, source: 'Unavailable', manualRaw: '' };
+    }
+
+    function getStudyObservedSeconds(data) {
+      return getStudyObservedInfo(data).seconds;
+    }
+
+    function getProductionSpeed(data) {
+      return parseNumber(data.productionSpeed || data.formFields?.productionSpeed);
+    }
+
+    function buildCodeDescriptionMap(data) {
+      const map = new Map();
+      (data.downtimeCodes || []).forEach(item => {
+        const code = normalizeCode(item.abbreviation || item.code || item.downtimeCode);
+        if (code) map.set(code, String(item.description || '').trim());
+      });
+      return map;
+    }
+
+    function validateJsonFile(file) {
+      const nameOk = file.name.toLowerCase().endsWith('.json');
+      const typeOk = !file.type || file.type === 'application/json' || file.type === 'text/json' || file.type === 'text/plain';
+      return nameOk && typeOk;
+    }
+
+    function readFileAsText(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ''));
+        reader.onerror = () => reject(new Error(`Unable to read ${file.name}`));
+        reader.readAsText(file);
+      });
+    }
+
+    function readAllDirectoryEntries(directoryReader) {
+      return new Promise(resolve => {
+        const entries = [];
+        function readBatch() {
+          directoryReader.readEntries(batch => {
+            if (!batch.length) {
+              resolve(entries);
+              return;
+            }
+            entries.push(...batch);
+            readBatch();
+          }, err => {
+            console.warn('Unable to read a dropped folder entry.', err);
+            resolve(entries);
+          });
+        }
+        readBatch();
+      });
+    }
+
+    function entryToFile(entry) {
+      return new Promise(resolve => {
+        entry.file(resolve, err => {
+          console.warn('Unable to read a dropped file entry.', entry?.name || entry?.fullPath || '', err);
+          resolve(null);
+        });
+      });
+    }
+
+    async function collectFilesFromFileSystemHandle(handle) {
+      if (!handle) return [];
+      try {
+        if (handle.kind === 'file') {
+          const file = await handle.getFile();
+          return file ? [file] : [];
+        }
+        if (handle.kind === 'directory') {
+          const collected = [];
+          for await (const childHandle of handle.values()) {
+            collected.push(...await collectFilesFromFileSystemHandle(childHandle));
+          }
+          return collected;
+        }
+      } catch (err) {
+        console.warn('Unable to read a dropped file-system handle.', handle?.name || '', err);
+      }
+      return [];
+    }
+
+    async function collectFilesFromEntry(entry) {
+      if (!entry) return [];
+      if (entry.isFile) {
+        const file = await entryToFile(entry);
+        return file ? [file] : [];
+      }
+      if (entry.isDirectory) {
+        const reader = entry.createReader();
+        const entries = await readAllDirectoryEntries(reader);
+        const collected = [];
+        for (const childEntry of entries) {
+          collected.push(...await collectFilesFromEntry(childEntry));
+        }
+        return collected;
+      }
+      return [];
+    }
+
+    async function collectFilesFromDataTransfer(dataTransfer, mode = 'ANY') {
+      const directFiles = Array.from(dataTransfer?.files || []);
+      const items = Array.from(dataTransfer?.items || []).filter(item => !item.kind || item.kind === 'file');
+      if (!items.length) return mode === 'FOLDER' ? [] : directFiles;
+
+      const collected = [];
+      for (const item of items) {
+        try {
+          if (typeof item.getAsFileSystemHandle === 'function') {
+            const handle = await item.getAsFileSystemHandle();
+            if (handle && (mode !== 'FOLDER' || handle.kind === 'directory')) {
+              collected.push(...await collectFilesFromFileSystemHandle(handle));
+              continue;
+            }
+          }
+
+          if (typeof item.webkitGetAsEntry === 'function') {
+            const entry = item.webkitGetAsEntry();
+            if (entry && (mode !== 'FOLDER' || entry.isDirectory)) {
+              collected.push(...await collectFilesFromEntry(entry));
+              continue;
+            }
+          }
+
+          const file = typeof item.getAsFile === 'function' ? item.getAsFile() : null;
+          if (file && mode !== 'FOLDER') collected.push(file);
+        } catch (err) {
+          console.warn('Unable to inspect a dropped item.', err);
+        }
+      }
+
+      if (mode !== 'FOLDER') {
+        directFiles.forEach(file => {
+          const alreadyIncluded = collected.some(existing =>
+            existing.name === file.name && existing.size === file.size && existing.lastModified === file.lastModified
+          );
+          if (!alreadyIncluded) collected.push(file);
+        });
+      }
+
+      return collected;
+    }
+
+    async function handleDropTransfer(dataTransfer, mode = 'ANY') {
+      const files = await collectFilesFromDataTransfer(dataTransfer, mode);
+      if (!files.length) {
+        const message = mode === 'FOLDER'
+          ? 'No readable JSON files were found in that folder drop. Folder drag-and-drop is browser-limited; use Browse for Study Folder if this continues.'
+          : 'No readable JSON files were found in the drop. Try dropping the JSON file directly or use the browse button.';
+        setStatus(message, 'warn');
+        return;
+      }
+      await handleFiles(files);
+    }
+
+    async function handleFiles(fileList) {
+      const files = Array.from(fileList || []);
+      if (!files.length) return;
+
+      const rejected = files.filter(file => !validateJsonFile(file));
+      const jsonFiles = files.filter(validateJsonFile);
+      let loaded = 0;
+      let failed = 0;
+
+      for (const file of jsonFiles) {
+        try {
+          const text = await readFileAsText(file);
+          const data = JSON.parse(text);
+          if (!Array.isArray(data.events)) throw new Error('Missing events array');
+          addStudy(file.name, data);
+          loaded += 1;
+        } catch (err) {
+          console.error(err);
+          failed += 1;
+        }
+      }
+
+      recalculateAndRender();
+
+      const messages = [];
+      if (loaded) messages.push(`${loaded} JSON stud${loaded === 1 ? 'y' : 'ies'} loaded.`);
+      if (rejected.length) messages.push(`${rejected.length} non-JSON file${rejected.length === 1 ? '' : 's'} rejected.`);
+      if (failed) messages.push(`${failed} JSON file${failed === 1 ? '' : 's'} could not be parsed or did not match the study format.`);
+      if (!messages.length) messages.push('No valid JSON study files were loaded.');
+      setStatus(messages.join(' '), failed || rejected.length ? 'warn' : 'good');
+
+      els.jsonInput.value = '';
+      els.jsonInputSecondary.value = '';
+      if (els.folderInput) els.folderInput.value = '';
+      if (els.folderInputSecondary) els.folderInputSecondary.value = '';
+    }
+
+    function addStudy(fileName, data) {
+      const studyInfo = data.studyInfo || {};
+      const formFields = data.formFields || {};
+      const codeDescriptions = buildCodeDescriptionMap(data);
+      const observedInfo = getStudyObservedInfo(data);
+      const observedSeconds = observedInfo.seconds;
+      const productionSpeed = getProductionSpeed(data);
+      const events = (data.events || []).map((event, index) => {
+        const code = normalizeCode(event.downtimeCode);
+        const durationSeconds = parseNumber(event.durationSeconds);
+        return {
+          eventNumber: event.eventNumber || index + 1,
+          code,
+          durationSeconds,
+          startTime: event.startTime || '',
+          stopTime: event.stopTime || '',
+          startTimestamp: event.startTimestamp || '',
+          stopTimestamp: event.stopTimestamp || '',
+          notes: event.notes || '',
+          description: codeDescriptions.get(code) || ''
+        };
+      }).filter(event => event.durationSeconds > 0);
+
+      const totalDowntimeSeconds = events.reduce((sum, event) => sum + event.durationSeconds, 0);
+      const projectedUnits = productionSpeed && observedSeconds ? productionSpeed * (observedSeconds / 3600) : 0;
+      const lostUnits = productionSpeed && totalDowntimeSeconds ? productionSpeed * (totalDowntimeSeconds / 3600) : 0;
+
+      const id = `${Date.now()}_${Math.random().toString(16).slice(2)}`;
+      state.studies.push({
+        id,
+        fileName,
+        savedAt: data.savedAt || '',
+        generatedFileName: data.generatedFileName || data.studyFileNameOverride || fileName,
+        location: studyInfo.studyLocation || formFields.studyLocation || '',
+        date: studyInfo.studyDate || formFields.studyDate || '',
+        shift: studyInfo.studyShift || formFields.studyShift || '',
+        line: studyInfo.studyLine || formFields.studyLine || '',
+        product: studyInfo.studyProduct || formFields.studyProduct || '',
+        observer: studyInfo.studyObserver || formFields.studyObserver || data.operatorName || formFields.operatorName || '',
+        objective: studyInfo.studyObjective || formFields.studyObjective || '',
+        productionSpeed,
+        observedSeconds,
+        observedSource: observedInfo.source,
+        manualDurationRaw: observedInfo.manualRaw,
+        totalDowntimeSeconds,
+        projectedUnits,
+        lostUnits,
+        segments: Array.isArray(data.studySegments) ? data.studySegments : [],
+        events,
+        codeDescriptions
+      });
+    }
+
+
+    function normalizeGroupName(value) {
+      return String(value || '').trim().replace(/\s+/g, ' ');
+    }
+
+    function getGroupForCode(code) {
+      const normalized = normalizeCode(code);
+      return state.tagGroups.find(group => group.codes.has(normalized)) || null;
+    }
+
+    function getGroupMode(group) {
+      return group && group.viewMode === 'SEPARATE' ? 'SEPARATE' : 'COMBINED';
+    }
+
+    function getEffectiveCode(code) {
+      const group = getGroupForCode(code);
+      if (!group || getGroupMode(group) === 'SEPARATE') return normalizeCode(code);
+      return group.name;
+    }
+
+    function getEffectiveDescription(code, fallbackDescription = '') {
+      const group = getGroupForCode(code);
+      if (!group || getGroupMode(group) === 'SEPARATE') return fallbackDescription || '';
+      const codes = Array.from(group.codes).sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+      return `Grouped downtime tags: ${codes.join(', ')}`;
+    }
+
+    function getAllAvailableCodes() {
+      return getCodeSummaryRows().map(row => row.code);
+    }
+
+    function cleanupTagGroups() {
+      const validCodes = new Set(getAllAvailableCodes());
+      const used = new Set();
+      state.tagGroups.forEach(group => {
+        group.name = normalizeGroupName(group.name) || 'Unnamed Group';
+        group.viewMode = group.viewMode === 'SEPARATE' ? 'SEPARATE' : 'COMBINED';
+        group.codes = new Set(Array.from(group.codes || []).map(normalizeCode).filter(code => validCodes.has(code) && !used.has(code)));
+        group.codes.forEach(code => used.add(code));
+      });
+      state.tagGroups = state.tagGroups.filter(group => group.name && group.codes instanceof Set);
+    }
+
+    function createTagGroup(name) {
+      const cleanName = normalizeGroupName(name);
+      if (!cleanName) {
+        setStatus('Enter a group name before adding a grouping row.', 'warn');
+        return null;
+      }
+      const duplicate = state.tagGroups.some(group => group.name.toLowerCase() === cleanName.toLowerCase());
+      if (duplicate) {
+        setStatus(`A tag group named ${cleanName} already exists.`, 'warn');
+        return null;
+      }
+      const group = { id: `grp_${Date.now()}_${Math.random().toString(16).slice(2)}`, name: cleanName, viewMode: 'COMBINED', codes: new Set() };
+      state.tagGroups.push(group);
+      return group;
+    }
+
+    function addCodeToGroup(code, groupId) {
+      const group = state.tagGroups.find(item => item.id === groupId);
+      const normalized = normalizeCode(code);
+      if (!group || !normalized) return;
+      state.tagGroups.forEach(item => item.codes.delete(normalized));
+      group.codes.add(normalized);
+      state.expandedCodes.clear();
+      recalculateAndRender();
+    }
+
+    function removeCodeFromGroup(code, groupId) {
+      const group = state.tagGroups.find(item => item.id === groupId);
+      if (!group) return;
+      group.codes.delete(normalizeCode(code));
+      state.expandedCodes.clear();
+      recalculateAndRender();
+    }
+
+    function removeTagGroup(groupId) {
+      const group = state.tagGroups.find(item => item.id === groupId);
+      state.tagGroups = state.tagGroups.filter(item => item.id !== groupId);
+      state.expandedCodes.clear();
+      recalculateAndRender();
+      if (group) setStatus(`Removed grouping row ${group.name}.`, 'warn');
+    }
+
+    function renameTagGroup(groupId, newName) {
+      const group = state.tagGroups.find(item => item.id === groupId);
+      const cleanName = normalizeGroupName(newName);
+      if (!group || !cleanName) return;
+      const duplicate = state.tagGroups.some(item => item.id !== groupId && item.name.toLowerCase() === cleanName.toLowerCase());
+      if (duplicate) {
+        setStatus(`A tag group named ${cleanName} already exists.`, 'warn');
+        renderTagGroups();
+        return;
+      }
+      group.name = cleanName;
+      state.expandedCodes.clear();
+      recalculateAndRender();
+    }
+
+    function setTagGroupViewMode(groupId, viewMode) {
+      const group = state.tagGroups.find(item => item.id === groupId);
+      if (!group) return;
+      group.viewMode = viewMode === 'SEPARATE' ? 'SEPARATE' : 'COMBINED';
+      state.expandedCodes.clear();
+      recalculateAndRender();
+    }
+
+    function setGroupCodesIncluded(groupId, shouldInclude) {
+      const group = state.tagGroups.find(item => item.id === groupId);
+      if (!group) return;
+      group.codes.forEach(code => {
+        if (shouldInclude) state.excludedCodes.delete(code);
+        else state.excludedCodes.add(code);
+      });
+      state.expandedCodes.clear();
+      recalculateAndRender();
+    }
+
+    function csvEscape(value) {
+      const text = String(value ?? '');
+      return /[",\n\r]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
+    }
+
+    function parseCsvRows(text) {
+      const rows = [];
+      let row = [];
+      let cell = '';
+      let inQuotes = false;
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        const next = text[i + 1];
+        if (ch === '"') {
+          if (inQuotes && next === '"') { cell += '"'; i++; }
+          else inQuotes = !inQuotes;
+        } else if (ch === ',' && !inQuotes) {
+          row.push(cell); cell = '';
+        } else if ((ch === '\n' || ch === '\r') && !inQuotes) {
+          if (ch === '\r' && next === '\n') i++;
+          row.push(cell);
+          if (row.some(value => String(value).trim() !== '')) rows.push(row);
+          row = []; cell = '';
+        } else {
+          cell += ch;
+        }
+      }
+      row.push(cell);
+      if (row.some(value => String(value).trim() !== '')) rows.push(row);
+      return rows;
+    }
+
+    function exportTagGroupsCsv() {
+      cleanupTagGroups();
+      const rows = [['Group Name', 'Tag Code']];
+      state.tagGroups.forEach(group => {
+        if (!group.codes.size) rows.push([group.name, '']);
+        Array.from(group.codes).sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' })).forEach(code => rows.push([group.name, code]));
+      });
+      const csv = rows.map(row => row.map(csvEscape).join(',')).join('\n');
+      downloadBlob(csv, 'MPG_Downtime_Tag_Grouping.csv', 'text/csv');
+    }
+
+    async function importTagGroupsCsv(file) {
+      if (!file) return;
+      try {
+        const text = await readFileAsText(file);
+        const rows = parseCsvRows(text);
+        if (!rows.length) throw new Error('Empty CSV');
+        const header = rows[0].map(value => String(value).trim().toLowerCase());
+        const groupIndex = header.findIndex(value => value.includes('group') && !value.includes('view'));
+        const codeIndex = header.findIndex(value => value.includes('tag') || value.includes('code'));
+        const modeIndex = header.findIndex(value => value.includes('view') || value.includes('mode'));
+        const dataRows = groupIndex >= 0 && codeIndex >= 0 ? rows.slice(1) : rows;
+        const validCodes = new Set(getAllAvailableCodes());
+        const groupsByName = new Map();
+        let importedCodes = 0;
+        dataRows.forEach(row => {
+          const groupName = normalizeGroupName(row[groupIndex >= 0 ? groupIndex : 0]);
+          const code = normalizeCode(row[codeIndex >= 0 ? codeIndex : 1]);
+          const importedMode = String(row[modeIndex >= 0 ? modeIndex : 2] || '').trim().toUpperCase() === 'SEPARATE' ? 'SEPARATE' : 'COMBINED';
+          if (!groupName) return;
+          if (!groupsByName.has(groupName)) groupsByName.set(groupName, { codes: new Set(), viewMode: importedMode });
+          if (modeIndex >= 0) groupsByName.get(groupName).viewMode = importedMode;
+          if (code && code !== 'UNASSIGNED' && (!validCodes.size || validCodes.has(code))) {
+            groupsByName.get(groupName).codes.add(code);
+            importedCodes += 1;
+          }
+        });
+        state.tagGroups = Array.from(groupsByName.entries()).map(([name, groupData], index) => ({
+          id: `grp_import_${Date.now()}_${index}`,
+          name,
+          viewMode: groupData.viewMode,
+          codes: groupData.codes
+        }));
+        cleanupTagGroups();
+        state.expandedCodes.clear();
+        recalculateAndRender();
+        setStatus(`Imported ${state.tagGroups.length} grouping row${state.tagGroups.length === 1 ? '' : 's'} with ${importedCodes} mapped tag${importedCodes === 1 ? '' : 's'}.`, 'good');
+      } catch (err) {
+        console.error(err);
+        setStatus('Tag grouping CSV could not be imported. Expected columns: Group Name, Tag Code.', 'bad');
+      } finally {
+        if (els.tagGroupImportInput) els.tagGroupImportInput.value = '';
+      }
+    }
+
+    function getCodeSummaryRows() {
+      const map = new Map();
+      state.studies.forEach(study => {
+        study.events.forEach(event => {
+          if (!map.has(event.code)) {
+            map.set(event.code, {
+              code: event.code,
+              description: event.description || study.codeDescriptions.get(event.code) || '',
+              seconds: 0,
+              eventCount: 0
+            });
+          }
+          const row = map.get(event.code);
+          row.seconds += event.durationSeconds;
+          row.eventCount += 1;
+          if (!row.description && event.description) row.description = event.description;
+        });
+      });
+      return Array.from(map.values()).sort((a, b) => b.seconds - a.seconds || a.code.localeCompare(b.code));
+    }
+
+    function isCodeIncluded(code) {
+      return !state.excludedCodes.has(code);
+    }
+
+    function studyMatchesFilters(study) {
+      const locationOk = state.selectedLocation === 'ALL' || String(study.location || '') === state.selectedLocation;
+      const shiftOk = state.selectedShift === 'ALL' || String(study.shift || '') === state.selectedShift;
+      return locationOk && shiftOk;
+    }
+
+    function compareStudiesForSlicer(a, b) {
+      const byLoad = state.studies.indexOf(a) - state.studies.indexOf(b);
+      const compareText = (left, right) => String(left || '').localeCompare(String(right || ''), undefined, { numeric: true, sensitivity: 'base' });
+      if (state.studySortMode === 'LOCATION') {
+        return compareText(a.location, b.location) || compareText(a.shift, b.shift) || compareText(a.date, b.date) || byLoad;
+      }
+      if (state.studySortMode === 'SHIFT') {
+        return compareText(a.shift, b.shift) || compareText(a.location, b.location) || compareText(a.date, b.date) || byLoad;
+      }
+      if (state.studySortMode === 'DATE') {
+        return compareText(a.date, b.date) || compareText(a.location, b.location) || compareText(a.shift, b.shift) || byLoad;
+      }
+      return byLoad;
+    }
+
+    function getFilteredStudies() {
+      return state.studies.filter(studyMatchesFilters).sort(compareStudiesForSlicer);
+    }
+
+    function getVisibleStudies() {
+      const filtered = getFilteredStudies();
+      if (state.selectedStudyId === 'ALL') return filtered;
+      return filtered.filter(study => study.id === state.selectedStudyId);
+    }
+
+    function getStudyDisplayName(study) {
+      return study.generatedFileName || study.fileName || `${study.location} ${study.line}`.trim() || 'Loaded study';
+    }
+
+    function getViewLabel() {
+      if (state.selectedStudyId === 'ALL') return 'All loaded studies';
+      const study = state.studies.find(item => item.id === state.selectedStudyId);
+      return study ? getStudyDisplayName(study) : 'All loaded studies';
+    }
+
+    function getCodeSummaryRowsForVisibleStudies() {
+      const map = new Map();
+      getVisibleStudies().forEach(study => {
+        study.events.forEach(event => {
+          if (!map.has(event.code)) {
+            map.set(event.code, {
+              code: event.code,
+              description: event.description || study.codeDescriptions.get(event.code) || '',
+              seconds: 0,
+              eventCount: 0
+            });
+          }
+          const row = map.get(event.code);
+          row.seconds += event.durationSeconds;
+          row.eventCount += 1;
+          if (!row.description && event.description) row.description = event.description;
+        });
+      });
+      return Array.from(map.values()).sort((a, b) => b.seconds - a.seconds || a.code.localeCompare(b.code));
+    }
+
+    function recalculatePareto() {
+      const availableCodes = new Set(getCodeSummaryRowsForVisibleStudies().map(row => row.code));
+      Array.from(state.excludedCodes).forEach(code => {
+        if (!availableCodes.has(code)) state.excludedCodes.delete(code);
+      });
+
+      const map = new Map();
+      getVisibleStudies().forEach(study => {
+        study.events.forEach(event => {
+          if (!isCodeIncluded(event.code)) return;
+          const effectiveCode = getEffectiveCode(event.code);
+          const effectiveDescription = getEffectiveDescription(event.code, event.description || study.codeDescriptions.get(event.code) || '');
+          if (!map.has(effectiveCode)) {
+            map.set(effectiveCode, {
+              code: effectiveCode,
+              description: effectiveDescription,
+              sourceCodes: new Set(),
+              seconds: 0,
+              eventCount: 0,
+              studyIds: new Set(),
+              details: []
+            });
+          }
+          const row = map.get(effectiveCode);
+          row.sourceCodes.add(event.code);
+          row.seconds += event.durationSeconds;
+          row.eventCount += 1;
+          row.studyIds.add(study.id);
+          if (!row.description && event.description) row.description = event.description;
+          row.details.push({
+            studyId: study.id,
+            fileName: study.fileName,
+            location: study.location,
+            date: study.date,
+            shift: study.shift,
+            line: study.line,
+            eventNumber: event.eventNumber,
+            originalCode: event.code,
+            startTime: event.startTime,
+            stopTime: event.stopTime,
+            startTimestamp: event.startTimestamp,
+            stopTimestamp: event.stopTimestamp,
+            durationSeconds: event.durationSeconds,
+            notes: event.notes
+          });
+        });
+      });
+
+      const totalSeconds = Array.from(map.values()).reduce((sum, row) => sum + row.seconds, 0);
+      let cumulative = 0;
+      state.paretoRows = Array.from(map.values())
+        .sort((a, b) => b.seconds - a.seconds || a.code.localeCompare(b.code))
+        .map((row, index) => {
+          cumulative += row.seconds;
+          return {
+            ...row,
+            rank: index + 1,
+            percent: totalSeconds ? row.seconds / totalSeconds : 0,
+            cumulativePercent: totalSeconds ? cumulative / totalSeconds : 0,
+            studyCount: row.studyIds.size
+          };
+        });
+    }
+
+    function getTotals() {
+      let totalEvents = 0;
+      let downtimeSeconds = 0;
+      const visibleStudies = getVisibleStudies();
+      const observedSeconds = visibleStudies.reduce((sum, study) => sum + study.observedSeconds, 0);
+      visibleStudies.forEach(study => {
+        study.events.forEach(event => {
+          if (!isCodeIncluded(event.code)) return;
+          totalEvents += 1;
+          downtimeSeconds += event.durationSeconds;
+        });
+      });
+      return { totalEvents, downtimeSeconds, observedSeconds };
+    }
+
+    function renderTagFilter() {
+      const allRows = getCodeSummaryRowsForVisibleStudies();
+      const rows = allRows.filter(row => !getGroupForCode(row.code));
+      const hasRows = rows.length > 0;
+      els.selectAllTagsBtn.disabled = allRows.length === 0;
+      els.clearAllTagsBtn.disabled = allRows.length === 0;
+
+      if (!allRows.length) {
+        els.tagFilterStatus.textContent = 'No tags loaded.';
+        els.tagFilterGrid.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">Load JSON files to show reason-code filters.</div>';
+        return;
+      }
+
+      const groupedCount = allRows.length - rows.length;
+      const includedCount = allRows.filter(row => isCodeIncluded(row.code)).length;
+      const includedSeconds = allRows.filter(row => isCodeIncluded(row.code)).reduce((sum, row) => sum + row.seconds, 0);
+      const totalSeconds = allRows.reduce((sum, row) => sum + row.seconds, 0);
+      els.tagFilterStatus.textContent = `${includedCount} / ${allRows.length} tags included • ${formatDuration(includedSeconds)} included of ${formatDuration(totalSeconds)} downtime in view • ${groupedCount} grouped tag${groupedCount === 1 ? '' : 's'} managed below`;
+
+      if (!hasRows) {
+        els.tagFilterGrid.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">All visible reason-code tags are currently grouped. Use the grouped-tag checkboxes below to include or exclude them.</div>';
+        return;
+      }
+
+      els.tagFilterGrid.innerHTML = rows.map(row => `
+        <label class="tag-filter-item" draggable="true" data-drag-code="${escapeHtml(row.code)}" title="Drag this tag into a grouping row">
+          <input type="checkbox" data-filter-code="${escapeHtml(row.code)}" ${isCodeIncluded(row.code) ? 'checked' : ''} />
+          <span>
+            <span class="tag-filter-code">${escapeHtml(row.code)}</span>
+            <span class="tag-filter-meta">${row.eventCount.toLocaleString()} events • ${formatDuration(row.seconds)}</span>
+          </span>
+        </label>`).join('');
+    }
+
+    function renderTagGroups() {
+      cleanupTagGroups();
+      const hasCodes = getCodeSummaryRows().length > 0;
+      const hasGroups = state.tagGroups.length > 0;
+      els.exportTagGroupsBtn.disabled = !hasGroups;
+      els.clearTagGroupsBtn.disabled = !hasGroups;
+      els.removeEmptyGroupsBtn.disabled = !hasGroups;
+      els.addCheckedToGroupBtn.disabled = !hasGroups || !hasCodes;
+      if (!hasGroups) {
+        els.tagGroupStatus.textContent = 'No tag groups created. Add a grouping row, then drag tags from the reason-code filter into it.';
+        els.tagGroupList.innerHTML = '<div class="empty-state">No grouping rows yet.</div>';
+        return;
+      }
+
+      const totalMapped = state.tagGroups.reduce((sum, group) => sum + group.codes.size, 0);
+      const combinedGroups = state.tagGroups.filter(group => getGroupMode(group) === 'COMBINED').length;
+      const separateGroups = state.tagGroups.length - combinedGroups;
+      els.tagGroupStatus.textContent = `${state.tagGroups.length} grouping row${state.tagGroups.length === 1 ? '' : 's'} • ${totalMapped} tag${totalMapped === 1 ? '' : 's'} mapped • ${combinedGroups} combined group${combinedGroups === 1 ? '' : 's'} • ${separateGroups} original-tag group${separateGroups === 1 ? '' : 's'}. Grouped tags are hidden from the main reason-code filter.`;
+      els.tagGroupList.innerHTML = state.tagGroups.map(group => {
+        const codes = Array.from(group.codes).sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+        const hasCodes = codes.length > 0;
+        const allIncluded = hasCodes && codes.every(code => isCodeIncluded(code));
+        const someIncluded = hasCodes && codes.some(code => isCodeIncluded(code));
+        const visibilityLabel = allIncluded ? 'Hide All Tags' : 'View All Tags';
+        const visibilityTitle = allIncluded ? 'Exclude every tag in this group from the Pareto' : 'Include every tag in this group in the Pareto';
+        const chips = codes.map(code => `
+          <span class="tag-chip" draggable="true" data-drag-code="${escapeHtml(code)}">
+            <button type="button" class="danger" data-remove-code="${escapeHtml(code)}" data-group-id="${escapeHtml(group.id)}" aria-label="Remove ${escapeHtml(code)} from ${escapeHtml(group.name)}">×</button>
+            <span class="tag-chip-code">${escapeHtml(code)}</span>
+            <input type="checkbox" data-group-filter-code="${escapeHtml(code)}" ${isCodeIncluded(code) ? 'checked' : ''} aria-label="Include ${escapeHtml(code)} in Pareto" title="Include this grouped tag in the Pareto" />
+          </span>`).join('');
+        return `
+          <div class="tag-group-row" data-drop-group-id="${escapeHtml(group.id)}">
+            <div class="tag-group-header">
+              <div class="tag-group-name-wrap">
+                <span class="tag-group-field-label">Group Name:</span>
+                <input type="text" value="${escapeHtml(group.name)}" data-rename-group-id="${escapeHtml(group.id)}" aria-label="Rename grouping row" />
+                <button type="button" data-toggle-group-visibility="${escapeHtml(group.id)}" data-include-group="${allIncluded ? 'false' : 'true'}" ${hasCodes ? '' : 'disabled'} title="${escapeHtml(visibilityTitle)}">${visibilityLabel}</button>
+              </div>
+              <div class="button-row">
+                <select class="tag-group-mode-select" data-group-mode-id="${escapeHtml(group.id)}" aria-label="Pareto display mode for ${escapeHtml(group.name)}">
+                  <option value="COMBINED" ${getGroupMode(group) === 'COMBINED' ? 'selected' : ''}>Show this group combined</option>
+                  <option value="SEPARATE" ${getGroupMode(group) === 'SEPARATE' ? 'selected' : ''}>Show this group as original tags</option>
+                </select>
+                <span class="tag-filter-status" style="align-self:center;">${hasCodes ? `${someIncluded ? 'Some/All visible' : 'Hidden'} • ${codes.filter(code => isCodeIncluded(code)).length}/${codes.length}` : 'No tags'}</span>
+                <button type="button" data-delete-group-id="${escapeHtml(group.id)}" class="danger">Remove Row</button>
+              </div>
+            </div>
+            <div class="tag-chip-list">${chips || '<div class="tag-drop-empty">Drop reason-code tags here.</div>'}</div>
+          </div>`;
+      }).join('');
+    }
+
+    function recalculateAndRender() {
+      recalculatePareto();
+      renderStudySlicer();
+      renderTagFilter();
+      renderTagGroups();
+      renderMetrics();
+      renderParetoChart();
+      renderParetoTable();
+      renderCalculationTable();
+      renderStudyTable();
+      renderPrintStudyList();
+      renderPrintReportMeta();
+      const hasData = state.studies.length > 0;
+      els.exportExcelBtn.disabled = !hasData;
+      els.printParetoBtn.disabled = !hasData;
+    }
+
+    function getProductionMetricsForVisibleStudies() {
+      return getVisibleStudies().reduce((acc, study) => {
+        const optimum = study.productionSpeed && study.observedSeconds ? study.productionSpeed * (study.observedSeconds / 3600) : 0;
+        const includedDowntimeSeconds = study.events
+          .filter(event => isCodeIncluded(event.code))
+          .reduce((sum, event) => sum + event.durationSeconds, 0);
+        const loss = study.productionSpeed && includedDowntimeSeconds ? study.productionSpeed * (includedDowntimeSeconds / 3600) : 0;
+        acc.optimumUnits += optimum;
+        acc.lossUnits += loss;
+        return acc;
+      }, { optimumUnits: 0, lossUnits: 0 });
+    }
+
+    function optionHtml(value, label, selectedValue) {
+      return `<option value="${escapeHtml(value)}" ${value === selectedValue ? 'selected' : ''}>${escapeHtml(label)}</option>`;
+    }
+
+    function renderStudySlicer() {
+      const hasStudies = state.studies.length > 0;
+      const locationValues = Array.from(new Set(state.studies.map(study => String(study.location || '').trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+      const shiftValues = Array.from(new Set(state.studies.map(study => String(study.shift || '').trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+
+      if (state.selectedLocation !== 'ALL' && !locationValues.includes(state.selectedLocation)) state.selectedLocation = 'ALL';
+      if (state.selectedShift !== 'ALL' && !shiftValues.includes(state.selectedShift)) state.selectedShift = 'ALL';
+
+      els.studyLocationFilter.disabled = !hasStudies;
+      els.studyShiftFilter.disabled = !hasStudies;
+      els.studySortSelect.disabled = !hasStudies;
+      els.studyLocationFilter.innerHTML = optionHtml('ALL', 'All locations', state.selectedLocation) + locationValues.map(value => optionHtml(value, value, state.selectedLocation)).join('');
+      els.studyShiftFilter.innerHTML = optionHtml('ALL', 'All shifts', state.selectedShift) + shiftValues.map(value => optionHtml(value, value, state.selectedShift)).join('');
+      els.studySortSelect.value = state.studySortMode;
+
+      const filteredStudies = getFilteredStudies();
+      if (!hasStudies || (state.selectedStudyId !== 'ALL' && !filteredStudies.some(study => study.id === state.selectedStudyId))) {
+        state.selectedStudyId = 'ALL';
+      }
+
+      if (!hasStudies) {
+        els.studySlicerSelect.disabled = true;
+        els.studySlicerSelect.innerHTML = '<option value="ALL">All matching studies</option>';
+      } else {
+        els.studySlicerSelect.disabled = filteredStudies.length === 0;
+        const options = [`<option value="ALL">All matching studies (${filteredStudies.length})</option>`].concat(filteredStudies.map((study, index) => {
+          const labelParts = [getStudyDisplayName(study), study.date, study.location, study.shift, study.line].filter(Boolean);
+          return `<option value="${escapeHtml(study.id)}">${index + 1}. ${escapeHtml(labelParts.join(' • '))}</option>`;
+        }));
+        els.studySlicerSelect.innerHTML = options.join('');
+        els.studySlicerSelect.value = state.selectedStudyId;
+      }
+
+      const visibleTotals = getTotals();
+      const allIncludedSeconds = state.studies.reduce((sum, study) => sum + study.events.filter(event => isCodeIncluded(event.code)).reduce((inner, event) => inner + event.durationSeconds, 0), 0);
+      const productionMetrics = getProductionMetricsForVisibleStudies();
+      const netUnits = Math.max(0, productionMetrics.optimumUnits - productionMetrics.lossUnits);
+      els.slicerMetricEvents.textContent = visibleTotals.totalEvents.toLocaleString();
+      els.slicerMetricDowntime.textContent = formatDuration(visibleTotals.downtimeSeconds);
+      els.slicerMetricShare.textContent = allIncludedSeconds ? formatPercent(visibleTotals.downtimeSeconds / allIncludedSeconds) : '0.0%';
+      els.slicerMetricOptimum.textContent = formatNumber(productionMetrics.optimumUnits);
+      els.slicerMetricLoss.textContent = formatNumber(productionMetrics.lossUnits);
+      els.slicerMetricUtilization.textContent = productionMetrics.optimumUnits ? formatPercent(netUnits / productionMetrics.optimumUnits) : '0.0%';
+    }
+
+    function renderMetrics() {
+      const totals = getTotals();
+      els.metricStudies.textContent = state.studies.length.toLocaleString();
+      els.metricEvents.textContent = totals.totalEvents.toLocaleString();
+      els.metricDowntime.textContent = formatDuration(totals.downtimeSeconds);
+      els.metricObserved.textContent = formatDuration(totals.observedSeconds);
+      els.metricPercent.textContent = totals.observedSeconds ? formatPercent(totals.downtimeSeconds / totals.observedSeconds) : '0.0%';
+    }
+
+    function hexToRgb(hex) {
+      const normalized = String(hex).replace('#', '').trim();
+      return {
+        r: parseInt(normalized.slice(0, 2), 16),
+        g: parseInt(normalized.slice(2, 4), 16),
+        b: parseInt(normalized.slice(4, 6), 16)
+      };
+    }
+
+    function rgbToHex({ r, g, b }) {
+      return `#${[r, g, b].map(v => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, '0')).join('')}`;
+    }
+
+    function interpolateColor(startHex, endHex, t) {
+      const start = hexToRgb(startHex);
+      const end = hexToRgb(endHex);
+      return rgbToHex({
+        r: start.r + (end.r - start.r) * t,
+        g: start.g + (end.g - start.g) * t,
+        b: start.b + (end.b - start.b) * t
+      });
+    }
+
+    function getParetoBarColor(index, total) {
+      const palette = ['#5b21b6', '#6d28d9', '#7c3aed', '#8b5cf6', '#a855f7', '#c4b5fd'];
+      if (total <= 1) return palette[0];
+      const scaled = (index / (total - 1)) * (palette.length - 1);
+      const leftIndex = Math.floor(scaled);
+      const rightIndex = Math.min(palette.length - 1, leftIndex + 1);
+      return interpolateColor(palette[leftIndex], palette[rightIndex], scaled - leftIndex);
+    }
+
+    function svgEl(tag, attrs = {}) {
+      const el = document.createElementNS(svgNS, tag);
+      Object.entries(attrs).forEach(([key, value]) => el.setAttribute(key, String(value)));
+      return el;
+    }
+
+    function getParetoRowByCode(code) {
+      const normalized = normalizeCode(code);
+      return state.paretoRows.find(row => row.code === normalized) || null;
+    }
+
+    function getStudySummaryForParetoRow(row) {
+      const studyMap = new Map(state.studies.map(study => [study.id, study]));
+      return Array.from(row.studyIds || [])
+        .map(studyId => studyMap.get(studyId))
+        .filter(Boolean)
+        .map(study => [getStudyDisplayName(study), study.date, study.location, study.shift, study.line].filter(Boolean).join(' • '))
+        .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+    }
+
+    function getDescriptionForParetoRow(row) {
+      const primary = String(row.description || '').trim();
+      if (primary) return primary;
+
+      const descriptions = [];
+      const seen = new Set();
+      (row.details || []).forEach(detail => {
+        const study = state.studies.find(item => item.id === detail.studyId);
+        const description = String(study?.codeDescriptions?.get(detail.originalCode) || '').trim();
+        if (description && !seen.has(description.toLowerCase())) {
+          descriptions.push(description);
+          seen.add(description.toLowerCase());
+        }
+      });
+      return descriptions.join('\n\n') || 'No description was found for this tag in the imported study files.';
+    }
+
+    function showParetoTagDescription(code) {
+      const row = getParetoRowByCode(code);
+      if (!row || !els.paretoDescriptionModal) return;
+
+      const sourceCodes = Array.from(row.sourceCodes || [row.code]).sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+      const studySummaries = getStudySummaryForParetoRow(row);
+      const studyPreview = studySummaries.slice(0, 8);
+      const extraStudies = Math.max(0, studySummaries.length - studyPreview.length);
+      const sourceCodeHtml = sourceCodes.map(codeValue => `<span class="pareto-source-code-chip">${escapeHtml(codeValue)}</span>`).join('');
+      const studiesHtml = studyPreview.length
+        ? `<ul class="pareto-study-list-mini">${studyPreview.map(item => `<li>${escapeHtml(item)}</li>`).join('')}${extraStudies ? `<li>+ ${extraStudies} more stud${extraStudies === 1 ? 'y' : 'ies'}</li>` : ''}</ul>`
+        : '<div class="print-study-muted">No study reference available.</div>';
+
+      els.paretoDescriptionTitle.textContent = row.code;
+      els.paretoDescriptionBody.innerHTML = `
+        <div class="pareto-description-box">${escapeHtml(getDescriptionForParetoRow(row))}</div>
+        <div class="pareto-modal-metrics">
+          <div class="pareto-modal-metric"><div class="pareto-modal-metric-label">Rank</div><div class="pareto-modal-metric-value">#${row.rank}</div></div>
+          <div class="pareto-modal-metric"><div class="pareto-modal-metric-label">Events</div><div class="pareto-modal-metric-value">${row.eventCount.toLocaleString()}</div></div>
+          <div class="pareto-modal-metric"><div class="pareto-modal-metric-label">Downtime</div><div class="pareto-modal-metric-value">${formatDuration(row.seconds)}</div></div>
+          <div class="pareto-modal-metric"><div class="pareto-modal-metric-label">Share</div><div class="pareto-modal-metric-value">${formatPercent(row.percent)}</div></div>
+        </div>
+        <div class="pareto-modal-section-title">Source tag${sourceCodes.length === 1 ? '' : 's'}</div>
+        <div class="pareto-source-code-list">${sourceCodeHtml}</div>
+        <div class="pareto-modal-section-title">Studies affected</div>
+        ${studiesHtml}
+      `;
+      els.paretoDescriptionModal.classList.remove('hidden');
+      els.paretoDescriptionCloseBtn?.focus();
+    }
+
+    function hideParetoTagDescription() {
+      els.paretoDescriptionModal?.classList.add('hidden');
+    }
+
+
+    function renderParetoChart() {
+      const svg = els.paretoSvg;
+      while (svg.firstChild) svg.removeChild(svg.firstChild);
+      svg.setAttribute('viewBox', '0 0 1050 460');
+
+      const rows = state.paretoRows.slice(0, 12);
+      const width = 1050;
+      const height = 460;
+      const margin = { top: 74, right: 72, bottom: 92, left: 78 };
+      const chartW = width - margin.left - margin.right;
+      const chartH = height - margin.top - margin.bottom;
+
+      svg.appendChild(svgEl('rect', { x: 0, y: 0, width, height, rx: 16, fill: 'rgba(255,255,255,0.015)' }));
+      const title = svgEl('text', { x: width / 2, y: 24, fill: '#ffffff', 'font-size': 16, 'font-weight': 900, 'text-anchor': 'middle' });
+      title.textContent = rows.length ? 'Downtime Pareto by Reason Code' : 'Load JSON Files to Generate Pareto';
+      svg.appendChild(title);
+
+      if (rows.length) {
+        const sourceLabel = getViewLabel();
+        const trimmedSourceLabel = sourceLabel.length > 108 ? `${sourceLabel.slice(0, 105)}...` : sourceLabel;
+        const subtitle = svgEl('text', { x: width / 2, y: 47, fill: '#d4d4d8', 'font-size': 12, 'font-weight': 750, 'text-anchor': 'middle' });
+        subtitle.textContent = `Pareto source: ${trimmedSourceLabel}`;
+        svg.appendChild(subtitle);
+      }
+
+      if (!rows.length) {
+        const empty = svgEl('text', { x: width / 2, y: height / 2, fill: '#a1a1aa', 'font-size': 18, 'font-weight': 800, 'text-anchor': 'middle' });
+        empty.textContent = 'No downtime data loaded';
+        svg.appendChild(empty);
+        return;
+      }
+
+      const maxSeconds = Math.max(...rows.map(r => r.seconds), 1);
+      const barGap = 12;
+      const barW = chartW / rows.length - barGap;
+
+      for (let i = 0; i <= 5; i++) {
+        const y = margin.top + chartH - (chartH * i / 5);
+        svg.appendChild(svgEl('line', { x1: margin.left, y1: y, x2: margin.left + chartW, y2: y, stroke: 'rgba(255,255,255,0.10)', 'stroke-width': 1 }));
+        const label = svgEl('text', { x: margin.left - 10, y: y + 4, fill: '#a1a1aa', 'font-size': 11, 'text-anchor': 'end' });
+        label.textContent = formatDuration(maxSeconds * i / 5);
+        svg.appendChild(label);
+      }
+
+      svg.appendChild(svgEl('line', { x1: margin.left, y1: margin.top, x2: margin.left, y2: margin.top + chartH, stroke: 'rgba(255,255,255,0.28)', 'stroke-width': 1 }));
+      svg.appendChild(svgEl('line', { x1: margin.left, y1: margin.top + chartH, x2: margin.left + chartW, y2: margin.top + chartH, stroke: 'rgba(255,255,255,0.28)', 'stroke-width': 1 }));
+      const points = [];
+      rows.forEach((row, index) => {
+        const x = margin.left + index * (barW + barGap) + barGap / 2;
+        const barH = chartH * row.seconds / maxSeconds;
+        const y = margin.top + chartH - barH;
+        const group = svgEl('g', {
+          class: 'pareto-chart-hotspot',
+          tabindex: 0,
+          role: 'button',
+          'aria-label': `View description for ${row.code}`,
+          'data-pareto-code': row.code
+        });
+
+        group.appendChild(svgEl('rect', { x, y, width: barW, height: barH, rx: 8, fill: getParetoBarColor(index, rows.length), opacity: 0.94 }));
+
+        const value = svgEl('text', { x: x + barW / 2, y: y - 7, fill: '#ffffff', 'font-size': 11, 'font-weight': 900, 'text-anchor': 'middle', 'pointer-events': 'none' });
+        value.textContent = formatDuration(row.seconds);
+        group.appendChild(value);
+
+        const code = svgEl('text', { x: x + barW / 2, y: margin.top + chartH + 18, fill: '#f4f4f5', 'font-size': 11, 'font-weight': 850, 'text-anchor': 'end', transform: `rotate(-35 ${x + barW / 2} ${margin.top + chartH + 18})`, 'pointer-events': 'none' });
+        code.textContent = row.code;
+        group.appendChild(code);
+
+        const px = x + barW / 2;
+        const py = margin.top + chartH - (chartH * row.cumulativePercent);
+        points.push(`${px},${py}`);
+        group.appendChild(svgEl('circle', { cx: px, cy: py, r: 5, fill: '#ffffff', stroke: '#050505', 'stroke-width': 2 }));
+        group.appendChild(svgEl('title', {},));
+        group.querySelector('title').textContent = `${row.code}: ${getDescriptionForParetoRow(row)}`;
+        svg.appendChild(group);
+      });
+
+      if (points.length > 1) {
+        svg.appendChild(svgEl('polyline', { points: points.join(' '), fill: 'none', stroke: '#ffffff', 'stroke-width': 3, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: 0.92 }));
+      }
+
+      [0, 0.5, 0.8, 1].forEach(p => {
+        const y = margin.top + chartH - chartH * p;
+        const label = svgEl('text', { x: margin.left + chartW + 12, y: y + 4, fill: '#a1a1aa', 'font-size': 11 });
+        label.textContent = `${Math.round(p * 100)}%`;
+        svg.appendChild(label);
+      });
+
+      const leftAxis = svgEl('text', { x: 18, y: margin.top + chartH / 2, fill: '#a1a1aa', 'font-size': 11, 'font-weight': 850, 'text-anchor': 'middle', transform: `rotate(-90 18 ${margin.top + chartH / 2})` });
+      leftAxis.textContent = 'Downtime duration';
+      svg.appendChild(leftAxis);
+      const rightAxis = svgEl('text', { x: width - 16, y: margin.top + chartH / 2, fill: '#a1a1aa', 'font-size': 11, 'font-weight': 850, 'text-anchor': 'middle', transform: `rotate(90 ${width - 16} ${margin.top + chartH / 2})` });
+      rightAxis.textContent = 'Cumulative percent';
+      svg.appendChild(rightAxis);
+    }
+
+    function renderParetoTable() {
+      if (!state.paretoRows.length) {
+        els.paretoBody.innerHTML = '<tr><td colspan="10" class="empty-state">Load JSON files or select at least one reason-code tag to generate the Pareto breakdown.</td></tr>';
+        return;
+      }
+
+      let html = '';
+      state.paretoRows.forEach(row => {
+        const isOpen = state.expandedCodes.has(row.code);
+        html += `
+          <tr>
+            <td class="expand-cell"><button class="expand-btn" type="button" data-code="${escapeHtml(row.code)}" aria-label="Toggle ${escapeHtml(row.code)} details">${isOpen ? '▲' : '▼'}</button></td>
+            <td class="number">${row.rank}</td>
+            <td><strong>${escapeHtml(row.code)}</strong></td>
+            <td class="left">${escapeHtml(row.description || 'No code description found in loaded JSON.')}</td>
+            <td class="number">${row.eventCount.toLocaleString()}</td>
+            <td class="number">${formatDuration(row.seconds)}</td>
+            <td class="number">${formatMinutes(row.seconds)}</td>
+            <td class="number">${formatPercent(row.percent)}</td>
+            <td class="number">${formatPercent(row.cumulativePercent)}</td>
+            <td class="number">${row.studyCount.toLocaleString()}</td>
+          </tr>`;
+        if (isOpen) {
+          html += `<tr class="detail-row"><td colspan="10"><div class="detail-panel">${renderCodeDetails(row)}</div></td></tr>`;
+        }
+      });
+      els.paretoBody.innerHTML = html;
+    }
+
+    function renderCodeDetails(row) {
+      const detailRows = row.details
+        .sort((a, b) => String(a.date).localeCompare(String(b.date)) || String(a.startTimestamp).localeCompare(String(b.startTimestamp)))
+        .map(detail => `
+          <tr>
+            <td>${escapeHtml(detail.fileName)}</td>
+            <td>${escapeHtml(detail.location)}</td>
+            <td>${escapeHtml(detail.date)}</td>
+            <td>${escapeHtml(detail.shift)}</td>
+            <td>${escapeHtml(detail.line)}</td>
+            <td class="number">${escapeHtml(detail.eventNumber)}</td>
+            <td><strong>${escapeHtml(detail.originalCode || '')}</strong></td>
+            <td>${escapeHtml(detail.startTime)}</td>
+            <td>${escapeHtml(detail.stopTime)}</td>
+            <td>${escapeHtml(detail.startTimestamp)}</td>
+            <td>${escapeHtml(detail.stopTimestamp)}</td>
+            <td class="number">${formatDuration(detail.durationSeconds)}</td>
+            <td class="left">${escapeHtml(detail.notes)}</td>
+          </tr>`).join('');
+      return `
+        <div class="nested-title">Timing records for ${escapeHtml(row.code)}</div>
+        <div class="table-scroll">
+          <table class="nested-table">
+            <thead><tr><th>File</th><th>Location</th><th>Date</th><th>Shift</th><th>Line</th><th>Event #</th><th>Original Code</th><th>Start</th><th>Stop</th><th>Start Timestamp</th><th>Stop Timestamp</th><th>Duration</th><th class="left">Notes</th></tr></thead>
+            <tbody>${detailRows}</tbody>
+          </table>
+        </div>`;
+    }
+
+    function renderPrintStudyList() {
+      const visibleStudies = getVisibleStudies();
+      if (!visibleStudies.length) {
+        els.printStudyBody.innerHTML = '<tr><td colspan="6" class="empty-state">No studies loaded.</td></tr>';
+        els.printStudyNote.textContent = 'Only loaded studies are listed. Reason-code filters apply to the Pareto totals above.';
+        return;
+      }
+
+      els.printStudyBody.innerHTML = visibleStudies.map(study => {
+        const studyName = getStudyDisplayName(study);
+        const filteredDowntime = study.events
+          .filter(event => isCodeIncluded(event.code))
+          .reduce((sum, event) => sum + event.durationSeconds, 0);
+        return `
+          <tr>
+            <td class="left">${escapeHtml(studyName)}</td>
+            <td>${escapeHtml(study.date)}</td>
+            <td>${escapeHtml(study.location)}</td>
+            <td>${escapeHtml(study.line)}</td>
+            <td>${escapeHtml(study.shift)}</td>
+            <td class="number">${formatDuration(filteredDowntime)}</td>
+          </tr>`;
+      }).join('');
+
+      const includedCodes = getCodeSummaryRows().filter(row => isCodeIncluded(row.code)).length;
+      const totalCodes = getCodeSummaryRows().length;
+      els.printStudyNote.textContent = `${visibleStudies.length} stud${visibleStudies.length === 1 ? 'y' : 'ies'} shown • Pareto source: ${getViewLabel()} • ${includedCodes} / ${totalCodes} reason-code tags included in Pareto totals.`;
+    }
+
+
+    function renderPrintReportMeta() {
+      if (!els.paretoPrintMeta) return;
+      const visibleStudies = getVisibleStudies();
+      const totals = getTotals();
+      const includedCodes = getCodeSummaryRows().filter(row => isCodeIncluded(row.code)).length;
+      const totalCodes = getCodeSummaryRows().length;
+      const generatedAt = new Date().toLocaleString(undefined, {
+        year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit'
+      });
+      const filters = [
+        `Source: ${getViewLabel()}`,
+        `Location: ${state.selectedLocation === 'ALL' ? 'All locations' : state.selectedLocation}`,
+        `Shift: ${state.selectedShift === 'ALL' ? 'All shifts' : state.selectedShift}`,
+        `Reason codes included: ${includedCodes} / ${totalCodes}`,
+        `Visible studies: ${visibleStudies.length}`,
+        `Events: ${totals.totalEvents.toLocaleString()}`,
+        `Generated: ${generatedAt}`
+      ];
+      els.paretoPrintMeta.textContent = filters.join(' • ');
+    }
+
+    function renderCalculationTable() {
+      if (!state.studies.length) {
+        els.calculationBody.innerHTML = '<tr><td colspan="14" class="empty-state">No studies loaded.</td></tr>';
+        return;
+      }
+
+      const totals = state.studies.reduce((acc, study) => {
+        acc.observedSeconds += study.observedSeconds;
+        acc.downtimeSeconds += study.totalDowntimeSeconds;
+        acc.projectedUnits += study.projectedUnits;
+        acc.lostUnits += study.lostUnits;
+        acc.netUnits += Math.max(0, study.projectedUnits - study.lostUnits);
+        return acc;
+      }, { observedSeconds: 0, downtimeSeconds: 0, projectedUnits: 0, lostUnits: 0, netUnits: 0 });
+
+      const rows = state.studies.map(study => {
+        const observedHours = study.observedSeconds / 3600;
+        const downtimeHours = study.totalDowntimeSeconds / 3600;
+        const netUnits = Math.max(0, study.projectedUnits - study.lostUnits);
+        const downtimePercent = study.observedSeconds ? study.totalDowntimeSeconds / study.observedSeconds : 0;
+        return `
+          <tr>
+            <td class="left"><strong>${escapeHtml(study.fileName)}</strong></td>
+            <td>${escapeHtml(study.location)}</td>
+            <td>${escapeHtml(study.date)}</td>
+            <td>${escapeHtml(study.shift)}</td>
+            <td>${escapeHtml(study.line)}</td>
+            <td class="number">${study.productionSpeed ? `${formatNumber(study.productionSpeed)} / hr` : 'Missing'}</td>
+            <td class="number">${formatDuration(study.observedSeconds)}</td>
+            <td class="number">${observedHours.toFixed(2)}</td>
+            <td class="number">${formatDuration(study.totalDowntimeSeconds)}</td>
+            <td class="number">${downtimeHours.toFixed(2)}</td>
+            <td class="number">${study.projectedUnits ? formatNumber(study.projectedUnits) : '0'}</td>
+            <td class="number">${study.lostUnits ? formatNumber(study.lostUnits) : '0'}</td>
+            <td class="number">${netUnits ? formatNumber(netUnits) : '0'}</td>
+            <td class="number">${formatPercent(downtimePercent)}</td>
+          </tr>`;
+      }).join('');
+
+      const totalDowntimePercent = totals.observedSeconds ? totals.downtimeSeconds / totals.observedSeconds : 0;
+      const totalRow = `
+        <tr class="calc-total-row">
+          <td class="left"><strong>Total</strong></td>
+          <td colspan="4">All loaded studies</td>
+          <td class="number">Mixed</td>
+          <td class="number">${formatDuration(totals.observedSeconds)}</td>
+          <td class="number">${(totals.observedSeconds / 3600).toFixed(2)}</td>
+          <td class="number">${formatDuration(totals.downtimeSeconds)}</td>
+          <td class="number">${(totals.downtimeSeconds / 3600).toFixed(2)}</td>
+          <td class="number">${formatNumber(totals.projectedUnits)}</td>
+          <td class="number">${formatNumber(totals.lostUnits)}</td>
+          <td class="number">${formatNumber(totals.netUnits)}</td>
+          <td class="number">${formatPercent(totalDowntimePercent)}</td>
+        </tr>`;
+
+      els.calculationBody.innerHTML = rows + totalRow;
+    }
+
+    function renderStudyTable() {
+      if (!state.studies.length) {
+        els.studyBody.innerHTML = '<tr><td colspan="16" class="empty-state">No studies loaded.</td></tr>';
+        return;
+      }
+      let html = '';
+      state.studies.forEach(study => {
+        const isOpen = state.expandedStudies.has(study.id);
+        const downtimePercent = study.observedSeconds ? study.totalDowntimeSeconds / study.observedSeconds : 0;
+        html += `
+          <tr>
+            <td class="expand-cell"><button class="expand-btn" type="button" data-study-id="${escapeHtml(study.id)}" aria-label="Toggle study timing details">${isOpen ? '▲' : '▼'}</button></td>
+            <td class="left"><strong>${escapeHtml(study.fileName)}</strong></td>
+            <td>${escapeHtml(study.location)}</td>
+            <td>${escapeHtml(study.date)}</td>
+            <td>${escapeHtml(study.shift)}</td>
+            <td>${escapeHtml(study.line)}</td>
+            <td>${escapeHtml(study.product)}</td>
+            <td>${escapeHtml(study.observer)}</td>
+            <td class="number">${formatDuration(study.observedSeconds)}</td>
+            <td>${escapeHtml(study.observedSource || 'Calculated')}</td>
+            <td class="number">${formatDuration(study.totalDowntimeSeconds)}</td>
+            <td class="number">${formatPercent(downtimePercent)}</td>
+            <td class="number">${study.productionSpeed ? `${formatNumber(study.productionSpeed)} / hr` : ''}</td>
+            <td class="number">${study.projectedUnits ? formatNumber(study.projectedUnits) : ''}</td>
+            <td class="number">${study.lostUnits ? formatNumber(study.lostUnits) : ''}</td>
+            <td class="no-print"><button class="remove-study-btn" type="button" data-remove-study-id="${escapeHtml(study.id)}">Remove</button></td>
+          </tr>`;
+        if (isOpen) {
+          html += `<tr class="detail-row"><td colspan="16"><div class="detail-panel">${renderStudyDetails(study)}</div></td></tr>`;
+        }
+      });
+      els.studyBody.innerHTML = html;
+    }
+
+    function renderStudyDetails(study) {
+      const sourceNote = study.observedSource === 'Manual total'
+        ? `<div class="nested-title">Observed time source: Manual total entered in source study (${escapeHtml(study.manualDurationRaw)} = ${formatDuration(study.observedSeconds)}). This overrides calculated segment time.</div>`
+        : `<div class="nested-title">Observed time source: ${escapeHtml(study.observedSource || 'Calculated')} (${formatDuration(study.observedSeconds)}).</div>`;
+      const segmentRows = study.segments.length ? study.segments.map((seg, index) => `
+        <tr>
+          <td class="number">${index + 1}</td>
+          <td>${escapeHtml(seg.startTimestamp || '')}</td>
+          <td>${escapeHtml(seg.stopTimestamp || '')}</td>
+          <td class="number">${formatDuration(secondsBetween(seg.startTimestamp, seg.stopTimestamp))}</td>
+        </tr>`).join('') : '<tr><td colspan="4" class="empty-state">No study segment timing records found.</td></tr>';
+
+      const eventRows = study.events.map(event => `
+        <tr>
+          <td class="number">${escapeHtml(event.eventNumber)}</td>
+          <td><strong>${escapeHtml(event.code)}</strong></td>
+          <td>${escapeHtml(event.startTime)}</td>
+          <td>${escapeHtml(event.stopTime)}</td>
+          <td>${escapeHtml(event.startTimestamp)}</td>
+          <td>${escapeHtml(event.stopTimestamp)}</td>
+          <td class="number">${formatDuration(event.durationSeconds)}</td>
+          <td class="left">${escapeHtml(event.notes)}</td>
+        </tr>`).join('');
+
+      return `
+        <div class="nested-title">Study timing segments</div>
+        <div class="table-scroll" style="margin-bottom: 14px;">
+          <table class="nested-table">
+            <thead><tr><th>Segment</th><th>Start Timestamp</th><th>Stop Timestamp</th><th>Observed Time</th></tr></thead>
+            <tbody>${segmentRows}</tbody>
+          </table>
+        </div>
+        <div class="nested-title">Event timing records</div>
+        <div class="table-scroll">
+          <table class="nested-table">
+            <thead><tr><th>Event #</th><th>Code</th><th>Start</th><th>Stop</th><th>Start Timestamp</th><th>Stop Timestamp</th><th>Duration</th><th class="left">Notes</th></tr></thead>
+            <tbody>${eventRows || '<tr><td colspan="8" class="empty-state">No completed downtime events found.</td></tr>'}</tbody>
+          </table>
+        </div>`;
+    }
+
+    function setStatus(message, type = '') {
+      els.loadStatus.className = `status ${type}`.trim();
+      els.loadStatus.textContent = message;
+    }
+
+    function clearData() {
+      state.studies = [];
+      state.paretoRows = [];
+      state.expandedCodes.clear();
+      state.expandedStudies.clear();
+      state.excludedCodes.clear();
+      state.selectedStudyId = 'ALL';
+      state.selectedLocation = 'ALL';
+      state.selectedShift = 'ALL';
+      state.studySortMode = 'LOAD';
+      state.tagGroups = [];
+      state.draggedTagCode = '';
+      recalculateAndRender();
+      setStatus('Loaded data cleared. Drop JSON study files to begin.', 'warn');
+    }
+
+    function tableRowsForExcel() {
+      const totals = getTotals();
+      const summary = [
+        ['Abel Engineering Multi-Study Downtime Totalizer'],
+        ['Pareto Source', getViewLabel()],
+        ['Studies Loaded', state.studies.length],
+        ['Studies in Current Pareto View', getVisibleStudies().length],
+        ['Downtime Events', totals.totalEvents],
+        ['Total Downtime', formatDuration(totals.downtimeSeconds)],
+        ['Observed Time', formatDuration(totals.observedSeconds)],
+        ['Downtime %', totals.observedSeconds ? formatPercent(totals.downtimeSeconds / totals.observedSeconds) : '0.0%'],
+        ['Optimum Production Count', formatNumber(getProductionMetricsForVisibleStudies().optimumUnits)],
+        ['Production Loss Count', formatNumber(getProductionMetricsForVisibleStudies().lossUnits)],
+        ['Production Utilization', getProductionMetricsForVisibleStudies().optimumUnits ? formatPercent(Math.max(0, getProductionMetricsForVisibleStudies().optimumUnits - getProductionMetricsForVisibleStudies().lossUnits) / getProductionMetricsForVisibleStudies().optimumUnits) : '0.0%'],
+        ['Included Reason Codes', getCodeSummaryRowsForVisibleStudies().filter(row => isCodeIncluded(row.code)).map(row => row.code).join(', ') || 'None'],
+        ['Excluded Reason Codes', getCodeSummaryRowsForVisibleStudies().filter(row => !isCodeIncluded(row.code)).map(row => row.code).join(', ') || 'None']
+      ];
+
+      const pareto = [
+        ['Rank','Reason Code','Code Description','Events','Downtime','Downtime Minutes','% of Downtime','Cumulative %','Studies Affected'],
+        ...state.paretoRows.map(row => [row.rank, row.code, row.description, row.eventCount, formatDuration(row.seconds), formatMinutes(row.seconds), formatPercent(row.percent), formatPercent(row.cumulativePercent), row.studyCount])
+      ];
+
+      const studyReference = [
+        ['File','Location','Date','Shift','Line / Machine','Product','Observer','Study Time','Time Source','Total Downtime','Downtime %','Production Speed','Projected Units','Lost Units'],
+        ...getVisibleStudies().map(study => [study.fileName, study.location, study.date, study.shift, study.line, study.product, study.observer, formatDuration(study.observedSeconds), study.observedSource || 'Calculated', formatDuration(study.totalDowntimeSeconds), study.observedSeconds ? formatPercent(study.totalDowntimeSeconds / study.observedSeconds) : '0.0%', study.productionSpeed, Math.round(study.projectedUnits), Math.round(study.lostUnits)])
+      ];
+
+      const dataCalculation = [
+        ['File','Location','Date','Shift','Line / Machine','Production Speed / Hr','Observed Time','Observed Hours','Downtime Total','Downtime Hours','Projected Production','Production Loss','Net Available Production','Downtime %'],
+        ...state.studies.map(study => {
+          const observedHours = study.observedSeconds / 3600;
+          const downtimeHours = study.totalDowntimeSeconds / 3600;
+          const netUnits = Math.max(0, study.projectedUnits - study.lostUnits);
+          return [study.fileName, study.location, study.date, study.shift, study.line, study.productionSpeed, formatDuration(study.observedSeconds), observedHours.toFixed(2), formatDuration(study.totalDowntimeSeconds), downtimeHours.toFixed(2), Math.round(study.projectedUnits), Math.round(study.lostUnits), Math.round(netUnits), study.observedSeconds ? formatPercent(study.totalDowntimeSeconds / study.observedSeconds) : '0.0%'];
+        }),
+        ['Total','All loaded studies','','','','Mixed', formatDuration(state.studies.reduce((sum, study) => sum + study.observedSeconds, 0)), (state.studies.reduce((sum, study) => sum + study.observedSeconds, 0) / 3600).toFixed(2), formatDuration(state.studies.reduce((sum, study) => sum + study.totalDowntimeSeconds, 0)), (state.studies.reduce((sum, study) => sum + study.totalDowntimeSeconds, 0) / 3600).toFixed(2), Math.round(state.studies.reduce((sum, study) => sum + study.projectedUnits, 0)), Math.round(state.studies.reduce((sum, study) => sum + study.lostUnits, 0)), Math.round(state.studies.reduce((sum, study) => sum + Math.max(0, study.projectedUnits - study.lostUnits), 0)), state.studies.reduce((sum, study) => sum + study.observedSeconds, 0) ? formatPercent(state.studies.reduce((sum, study) => sum + study.totalDowntimeSeconds, 0) / state.studies.reduce((sum, study) => sum + study.observedSeconds, 0)) : '0.0%']
+      ];
+
+      const eventTiming = [
+        ['File','Location','Date','Shift','Line / Machine','Event #','Original Reason Code','Pareto Reason Code / Group','Start','Stop','Start Timestamp','Stop Timestamp','Duration','Duration Seconds','Notes'],
+        ...getVisibleStudies().flatMap(study => study.events.filter(event => isCodeIncluded(event.code)).map(event => [study.fileName, study.location, study.date, study.shift, study.line, event.eventNumber, event.code, getEffectiveCode(event.code), event.startTime, event.stopTime, event.startTimestamp, event.stopTimestamp, formatDuration(event.durationSeconds), event.durationSeconds, event.notes]))
+      ];
+
+      const segmentTiming = [
+        ['File','Location','Date','Shift','Line / Machine','Observed Time Source','Segment #','Start Timestamp','Stop Timestamp','Calculated Segment Time','Calculated Segment Seconds'],
+        ...getVisibleStudies().flatMap(study => study.segments.map((seg, index) => [study.fileName, study.location, study.date, study.shift, study.line, study.observedSource || 'Calculated', index + 1, seg.startTimestamp || '', seg.stopTimestamp || '', formatDuration(secondsBetween(seg.startTimestamp, seg.stopTimestamp)), Math.round(secondsBetween(seg.startTimestamp, seg.stopTimestamp))]))
+      ];
+
+      const tagGroups = [
+        ['Group Name','Tag Code','Group View Mode'],
+        ...state.tagGroups.flatMap(group => group.codes.size ? Array.from(group.codes).sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' })).map(code => [group.name, code, getGroupMode(group)]) : [[group.name, '', getGroupMode(group)]])
+      ];
+
+      return { summary, pareto, studyReference, dataCalculation, eventTiming, segmentTiming, tagGroups };
+    }
+
+    function rowsToHtmlTable(name, rows) {
+      return `<table><caption>${escapeHtml(name)}</caption>${rows.map((row, rowIndex) => `<tr>${row.map(cell => rowIndex === 0 ? `<th>${escapeHtml(cell)}</th>` : `<td>${escapeHtml(cell)}</td>`).join('')}</tr>`).join('')}</table>`;
+    }
+
+    function exportExcel() {
+      if (!state.studies.length) return;
+      const sheets = tableRowsForExcel();
+      const html = `
+        <html><head><meta charset="UTF-8"><style>
+          table { border-collapse: collapse; margin-bottom: 24px; }
+          caption { font-weight: bold; font-size: 16px; margin: 8px 0; text-align: left; }
+          th, td { border: 1px solid #999; padding: 6px; mso-number-format:'\\@'; }
+          th { background: #111; color: #fff; }
+        </style></head><body>
+          ${rowsToHtmlTable('Summary', sheets.summary)}
+          ${rowsToHtmlTable('Pareto Breakdown', sheets.pareto)}
+          ${rowsToHtmlTable('Study Reference', sheets.studyReference)}
+          ${rowsToHtmlTable('Data Calculation', sheets.dataCalculation)}
+          ${rowsToHtmlTable('Event Timing Records', sheets.eventTiming)}
+          ${rowsToHtmlTable('Study Segment Timing', sheets.segmentTiming)}
+          ${rowsToHtmlTable('Tag Group Mapping', sheets.tagGroups)}
+        </body></html>`;
+      downloadBlob(html, 'MPG_Multi_Study_Downtime_Totalizer.xls', 'application/vnd.ms-excel');
+    }
+
+    function downloadBlob(content, filename, mimeType) {
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    let paretoPrintRestoreState = null;
+
+    function prepareParetoPrintView() {
+      if (!state.studies.length || paretoPrintRestoreState) return;
+      renderPrintStudyList();
+      renderPrintReportMeta();
+      paretoPrintRestoreState = {
+        title: document.title,
+        tableWasCollapsed: els.paretoTableWrap.classList.contains('table-collapsed'),
+        summaryText: els.paretoTableSummary ? els.paretoTableSummary.textContent : '',
+        buttonText: els.toggleParetoTableBtn ? els.toggleParetoTableBtn.textContent : ''
+      };
+      document.body.classList.add('print-pdf-mode');
+      document.title = `Abel Engineering Downtime Pareto - ${new Date().toISOString().slice(0, 10)}`;
+      els.paretoTableWrap.classList.remove('table-collapsed');
+      if (els.paretoTableSummary) els.paretoTableSummary.textContent = 'Included in PDF';
+      if (els.toggleParetoTableBtn) els.toggleParetoTableBtn.textContent = 'Collapse Table';
+    }
+
+    function restoreParetoPrintView() {
+      if (!paretoPrintRestoreState) return;
+      if (paretoPrintRestoreState.tableWasCollapsed) els.paretoTableWrap.classList.add('table-collapsed');
+      else els.paretoTableWrap.classList.remove('table-collapsed');
+      if (els.paretoTableSummary) els.paretoTableSummary.textContent = paretoPrintRestoreState.summaryText;
+      if (els.toggleParetoTableBtn) els.toggleParetoTableBtn.textContent = paretoPrintRestoreState.buttonText;
+      document.title = paretoPrintRestoreState.title;
+      document.body.classList.remove('print-pdf-mode');
+      paretoPrintRestoreState = null;
+    }
+
+    function printParetoPdf() {
+      if (!state.studies.length) return;
+      prepareParetoPrintView();
+      window.print();
+    }
+
+    function toggleCode(code) {
+      if (state.expandedCodes.has(code)) state.expandedCodes.delete(code);
+      else state.expandedCodes.add(code);
+      renderParetoTable();
+    }
+
+    function toggleStudy(studyId) {
+      if (state.expandedStudies.has(studyId)) state.expandedStudies.delete(studyId);
+      else state.expandedStudies.add(studyId);
+      renderStudyTable();
+    }
+
+    function removeStudy(studyId) {
+      const removedStudy = state.studies.find(study => study.id === studyId);
+      if (!removedStudy) return;
+      state.studies = state.studies.filter(study => study.id !== studyId);
+      state.expandedStudies.delete(studyId);
+      state.expandedCodes.clear();
+      if (state.selectedStudyId === studyId) state.selectedStudyId = 'ALL';
+      recalculateAndRender();
+      setStatus(`Removed ${getStudyDisplayName(removedStudy)} from the loaded study set.`, state.studies.length ? 'warn' : '');
+    }
+
+    function toggleTableWrap(wrapEl, buttonEl, summaryEl) {
+      if (!wrapEl || !buttonEl) return;
+      const collapsed = wrapEl.classList.toggle('table-collapsed');
+      buttonEl.textContent = collapsed ? 'Expand Table' : 'Collapse Table';
+      if (summaryEl) summaryEl.textContent = collapsed ? 'Collapsed' : 'Expanded';
+    }
+
+    function isProbablyFileDrop(event) {
+      const dataTransfer = event.dataTransfer;
+      if (!dataTransfer) return false;
+      const types = Array.from(dataTransfer.types || []).map(type => String(type).toLowerCase());
+      return types.includes('files') || (dataTransfer.files && dataTransfer.files.length > 0) || (dataTransfer.items && dataTransfer.items.length > 0);
+    }
+
+    function isInsideLoadArea(event) {
+      const target = event.target;
+      return Boolean(target?.closest?.('#jsonDropZone, #folderDropZone, #loadSection'));
+    }
+
+    function clearDropHighlights() {
+      els.jsonDropZone?.classList.remove('drag-over');
+      els.folderDropZone?.classList.remove('drag-over');
+    }
+
+    function bindDropZone(dropTarget, mode) {
+      if (!dropTarget) return;
+      dropTarget.addEventListener('dragenter', event => {
+        if (!isProbablyFileDrop(event)) return;
+        event.preventDefault();
+        event.stopPropagation();
+        if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
+        clearDropHighlights();
+        dropTarget.classList.add('drag-over');
+      });
+      dropTarget.addEventListener('dragover', event => {
+        if (!isProbablyFileDrop(event)) return;
+        event.preventDefault();
+        event.stopPropagation();
+        if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
+        dropTarget.classList.add('drag-over');
+      });
+      dropTarget.addEventListener('dragleave', event => {
+        const nextTarget = event.relatedTarget;
+        if (nextTarget && dropTarget.contains(nextTarget)) return;
+        dropTarget.classList.remove('drag-over');
+      });
+      dropTarget.addEventListener('drop', event => {
+        if (!isProbablyFileDrop(event)) return;
+        event.preventDefault();
+        event.stopPropagation();
+        clearDropHighlights();
+        handleDropTransfer(event.dataTransfer, mode);
+      });
+    }
+
+    bindDropZone(els.jsonDropZone, 'ANY');
+    bindDropZone(els.folderDropZone, 'FOLDER');
+
+    document.addEventListener('dragover', event => {
+      if (!isProbablyFileDrop(event) || !isInsideLoadArea(event)) return;
+      event.preventDefault();
+      if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
+    });
+
+    document.addEventListener('drop', event => {
+      if (!isProbablyFileDrop(event) || !isInsideLoadArea(event)) return;
+      event.preventDefault();
+    });
+
+    window.addEventListener('blur', clearDropHighlights);
+    els.jsonInput.addEventListener('change', event => handleFiles(event.target.files));
+    els.jsonInputSecondary.addEventListener('change', event => handleFiles(event.target.files));
+    if (els.folderInput) els.folderInput.addEventListener('change', event => handleFiles(event.target.files));
+    if (els.folderInputSecondary) els.folderInputSecondary.addEventListener('change', event => handleFiles(event.target.files));
+    els.clearBtn.addEventListener('click', clearData);
+    els.exportExcelBtn.addEventListener('click', exportExcel);
+    els.printParetoBtn.addEventListener('click', printParetoPdf);
+    window.addEventListener('beforeprint', prepareParetoPrintView);
+    window.addEventListener('afterprint', restoreParetoPrintView);
+
+    els.paretoSvg.addEventListener('click', event => {
+      const hotspot = event.target.closest('[data-pareto-code]');
+      if (hotspot) showParetoTagDescription(hotspot.getAttribute('data-pareto-code'));
+    });
+    els.paretoSvg.addEventListener('keydown', event => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      const hotspot = event.target.closest('[data-pareto-code]');
+      if (!hotspot) return;
+      event.preventDefault();
+      showParetoTagDescription(hotspot.getAttribute('data-pareto-code'));
+    });
+    els.paretoDescriptionCloseBtn?.addEventListener('click', hideParetoTagDescription);
+    els.paretoDescriptionModal?.addEventListener('click', event => {
+      if (event.target === els.paretoDescriptionModal) hideParetoTagDescription();
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape') hideParetoTagDescription();
+    });
+
+    els.paretoBody.addEventListener('click', event => {
+      const btn = event.target.closest('[data-code]');
+      if (btn) toggleCode(btn.getAttribute('data-code'));
+    });
+    els.studyBody.addEventListener('click', event => {
+      const removeBtn = event.target.closest('[data-remove-study-id]');
+      if (removeBtn) {
+        removeStudy(removeBtn.getAttribute('data-remove-study-id'));
+        return;
+      }
+      const btn = event.target.closest('[data-study-id]');
+      if (btn) toggleStudy(btn.getAttribute('data-study-id'));
+    });
+
+    els.studySlicerSelect.addEventListener('change', event => {
+      state.selectedStudyId = event.target.value || 'ALL';
+      state.expandedCodes.clear();
+      recalculateAndRender();
+    });
+    els.studyLocationFilter.addEventListener('change', event => {
+      state.selectedLocation = event.target.value || 'ALL';
+      state.selectedStudyId = 'ALL';
+      state.expandedCodes.clear();
+      recalculateAndRender();
+    });
+    els.studyShiftFilter.addEventListener('change', event => {
+      state.selectedShift = event.target.value || 'ALL';
+      state.selectedStudyId = 'ALL';
+      state.expandedCodes.clear();
+      recalculateAndRender();
+    });
+    els.studySortSelect.addEventListener('change', event => {
+      state.studySortMode = event.target.value || 'LOAD';
+      recalculateAndRender();
+    });
+    els.toggleParetoTableBtn.addEventListener('click', () => toggleTableWrap(els.paretoTableWrap, els.toggleParetoTableBtn, els.paretoTableSummary));
+    els.toggleCalculationTableBtn.addEventListener('click', () => toggleTableWrap(els.calculationTableWrap, els.toggleCalculationTableBtn, els.calculationTableSummary));
+    els.toggleStudyTableBtn.addEventListener('click', () => toggleTableWrap(els.studyTableWrap, els.toggleStudyTableBtn, els.studyTableSummary));
+
+    els.selectAllTagsBtn.addEventListener('click', () => {
+      state.excludedCodes.clear();
+      state.expandedCodes.clear();
+      recalculateAndRender();
+    });
+    els.clearAllTagsBtn.addEventListener('click', () => {
+      getCodeSummaryRowsForVisibleStudies().forEach(row => state.excludedCodes.add(row.code));
+      state.expandedCodes.clear();
+      recalculateAndRender();
+    });
+    els.tagFilterGrid.addEventListener('change', event => {
+      const checkbox = event.target.closest('[data-filter-code]');
+      if (!checkbox) return;
+      const code = checkbox.getAttribute('data-filter-code');
+      if (checkbox.checked) state.excludedCodes.delete(code);
+      else state.excludedCodes.add(code);
+      state.expandedCodes.clear();
+      recalculateAndRender();
+    });
+
+    els.tagFilterGrid.addEventListener('dragstart', event => {
+      const item = event.target.closest('[data-drag-code]');
+      if (!item) return;
+      state.draggedTagCode = item.getAttribute('data-drag-code') || '';
+      event.dataTransfer.setData('text/plain', state.draggedTagCode);
+      event.dataTransfer.effectAllowed = 'copyMove';
+    });
+
+    els.addTagGroupBtn.addEventListener('click', () => {
+      const group = createTagGroup(els.tagGroupNameInput.value);
+      if (!group) return;
+      els.tagGroupNameInput.value = '';
+      recalculateAndRender();
+      setStatus(`Added grouping row ${group.name}. Drag reason-code tags into it.`, 'good');
+    });
+
+    els.tagGroupNameInput.addEventListener('keydown', event => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        els.addTagGroupBtn.click();
+      }
+    });
+
+    els.addCheckedToGroupBtn.addEventListener('click', () => {
+      const group = state.tagGroups[state.tagGroups.length - 1];
+      if (!group) return;
+      getCodeSummaryRowsForVisibleStudies().filter(row => isCodeIncluded(row.code) && !getGroupForCode(row.code)).forEach(row => {
+        state.tagGroups.forEach(item => item.codes.delete(row.code));
+        group.codes.add(row.code);
+      });
+      state.expandedCodes.clear();
+      recalculateAndRender();
+      setStatus(`Added checked visible tags to ${group.name}.`, 'good');
+    });
+
+    els.removeEmptyGroupsBtn.addEventListener('click', () => {
+      const before = state.tagGroups.length;
+      state.tagGroups = state.tagGroups.filter(group => group.codes.size > 0);
+      recalculateAndRender();
+      setStatus(`Removed ${before - state.tagGroups.length} empty grouping row${before - state.tagGroups.length === 1 ? '' : 's'}.`, 'warn');
+    });
+
+    els.exportTagGroupsBtn.addEventListener('click', exportTagGroupsCsv);
+    els.clearTagGroupsBtn.addEventListener('click', () => {
+      state.tagGroups = [];
+      state.expandedCodes.clear();
+      recalculateAndRender();
+      setStatus('Tag grouping rows cleared. Original tags are still loaded.', 'warn');
+    });
+    els.tagGroupImportInput.addEventListener('change', event => importTagGroupsCsv(event.target.files?.[0]));
+
+    els.tagGroupList.addEventListener('dragover', event => {
+      const row = event.target.closest('[data-drop-group-id]');
+      if (!row) return;
+      event.preventDefault();
+      row.classList.add('drag-over');
+    });
+    els.tagGroupList.addEventListener('dragleave', event => {
+      const row = event.target.closest('[data-drop-group-id]');
+      if (row) row.classList.remove('drag-over');
+    });
+    els.tagGroupList.addEventListener('drop', event => {
+      const row = event.target.closest('[data-drop-group-id]');
+      if (!row) return;
+      event.preventDefault();
+      row.classList.remove('drag-over');
+      const code = event.dataTransfer.getData('text/plain') || state.draggedTagCode;
+      addCodeToGroup(code, row.getAttribute('data-drop-group-id'));
+    });
+    els.tagGroupList.addEventListener('dragstart', event => {
+      const chip = event.target.closest('[data-drag-code]');
+      if (!chip) return;
+      state.draggedTagCode = chip.getAttribute('data-drag-code') || '';
+      event.dataTransfer.setData('text/plain', state.draggedTagCode);
+      event.dataTransfer.effectAllowed = 'move';
+    });
+    els.tagGroupList.addEventListener('click', event => {
+      const removeCodeBtn = event.target.closest('[data-remove-code]');
+      if (removeCodeBtn) {
+        removeCodeFromGroup(removeCodeBtn.getAttribute('data-remove-code'), removeCodeBtn.getAttribute('data-group-id'));
+        return;
+      }
+      const deleteGroupBtn = event.target.closest('[data-delete-group-id]');
+      if (deleteGroupBtn) {
+        removeTagGroup(deleteGroupBtn.getAttribute('data-delete-group-id'));
+        return;
+      }
+      const groupVisibilityBtn = event.target.closest('[data-toggle-group-visibility]');
+      if (groupVisibilityBtn) {
+        setGroupCodesIncluded(groupVisibilityBtn.getAttribute('data-toggle-group-visibility'), groupVisibilityBtn.getAttribute('data-include-group') === 'true');
+        return;
+      }
+    });
+    els.tagGroupList.addEventListener('change', event => {
+      const groupCheckbox = event.target.closest('[data-group-filter-code]');
+      if (groupCheckbox) {
+        const code = groupCheckbox.getAttribute('data-group-filter-code');
+        if (groupCheckbox.checked) state.excludedCodes.delete(code);
+        else state.excludedCodes.add(code);
+        state.expandedCodes.clear();
+        recalculateAndRender();
+        return;
+      }
+      const modeSelect = event.target.closest('[data-group-mode-id]');
+      if (modeSelect) {
+        setTagGroupViewMode(modeSelect.getAttribute('data-group-mode-id'), modeSelect.value);
+        return;
+      }
+      const input = event.target.closest('[data-rename-group-id]');
+      if (input) renameTagGroup(input.getAttribute('data-rename-group-id'), input.value);
+    });
+
+
+    recalculateAndRender();
+  </script>
+</body>
+</html>
