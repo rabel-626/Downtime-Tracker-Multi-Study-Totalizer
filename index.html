@@ -828,6 +828,92 @@
       .detail-row, .expand-cell { display: none !important; }
       .table-scroll { overflow: visible !important; }
     }
+  
+
+    /* ============================================================
+       Abel Engineering standard Study Repository workflow
+       - Repository is the normal load/save surface.
+       - Legacy file/folder controls remain available only from the
+         Legacy File Load popup for backwards compatibility.
+       ============================================================ */
+    .ae-retired-storage-controls,
+    [hidden].ae-retired-storage-controls { display: none !important; }
+
+    .ae-repo-panel {
+      border: 1px solid rgba(196,181,253,.38) !important;
+      background: linear-gradient(145deg,rgba(139,92,246,.13),rgba(255,255,255,.025)),#100e14 !important;
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 14px;
+      box-shadow: 0 14px 34px rgba(0,0,0,.34),0 0 30px rgba(124,58,237,.08);
+    }
+    .ae-repo-head { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:10px; }
+    .ae-repo-head h2 { margin:0 !important; }
+    .ae-repo-badge { display:inline-flex; align-items:center; gap:7px; border:1px solid rgba(196,181,253,.35); border-radius:999px; padding:6px 10px; background:rgba(124,58,237,.10); font-size:11px; font-weight:900; color:#ddd6fe; }
+    .ae-repo-dot { width:9px; height:9px; border-radius:50%; background:#6b7280; }
+    .ae-repo-dot.good { background:#22c55e; box-shadow:0 0 10px rgba(34,197,94,.7); }
+    .ae-repo-dot.warn { background:#f59e0b; box-shadow:0 0 10px rgba(245,158,11,.5); }
+    .ae-repo-dot.bad { background:#ef4444; box-shadow:0 0 10px rgba(239,68,68,.5); }
+    .ae-official-only-note { margin-top:9px; padding:9px 11px; border:1px solid rgba(101,179,46,.25); border-radius:10px; background:rgba(101,179,46,.06); color:#bbf7d0; font-size:11px; font-weight:800; text-align:center; line-height:1.4; }
+    .ae-repo-route { margin-top:9px; padding:8px 10px; border:1px solid rgba(255,255,255,.11); border-radius:10px; background:#09080b; color:#b9b3c2; font:700 11px/1.4 Consolas,ui-monospace,monospace; text-align:center; overflow-wrap:anywhere; }
+    .ae-repo-actions { display:grid !important; grid-template-columns:repeat(2,minmax(180px,1fr)); gap:9px !important; max-width:780px; margin:12px auto 0 !important; align-items:stretch; }
+    .ae-repo-actions button { width:100%; min-height:46px !important; margin:0 !important; border-radius:12px !important; font-family:"Segoe UI",Arial,sans-serif !important; font-size:12px !important; font-weight:900 !important; letter-spacing:.025em !important; text-transform:uppercase !important; white-space:normal !important; }
+    .ae-repo-primary { background:linear-gradient(135deg,#74439f,#a66ed9) !important; border-color:rgba(210,170,245,.58) !important; color:#fff !important; box-shadow:0 8px 20px rgba(116,67,159,.24) !important; }
+    .ae-repo-open { background:linear-gradient(135deg,#5f3890,#8d58c7) !important; border-color:rgba(196,181,253,.48) !important; color:#fff !important; }
+    .ae-legacy-button { background:#27232d !important; border:1px solid rgba(196,181,253,.28) !important; color:#ece8f1 !important; }
+    .ae-repo-utility { display:flex; justify-content:center; margin-top:9px; }
+    .ae-repo-utility button { min-height:34px !important; padding:6px 10px !important; font-size:10px !important; background:transparent !important; color:#b9b3c2 !important; border-color:rgba(196,181,253,.17) !important; }
+    .ae-repo-status { margin-top:10px; padding:10px 12px; border:1px solid rgba(196,181,253,.22); border-radius:12px; background:rgba(255,255,255,.04); color:#d4d4d8; font-size:12px; line-height:1.45; text-align:center; overflow-wrap:anywhere; }
+    .ae-repo-status.good { border-color:rgba(34,197,94,.36); background:rgba(34,197,94,.07); color:#bbf7d0; }
+    .ae-repo-status.warn { border-color:rgba(245,158,11,.42); background:rgba(245,158,11,.08); color:#fde68a; }
+    .ae-repo-status.bad { border-color:rgba(239,68,68,.42); background:rgba(239,68,68,.08); color:#fecaca; }
+
+    .ae-source-state { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:9px; align-items:center; margin-top:10px; }
+    .ae-source-state .status { margin:0; }
+    .ae-source-state button { min-height:46px; white-space:nowrap; }
+
+    .ae-repo-browser,
+    .ae-legacy-modal { position:fixed; inset:0; z-index:32000; display:flex; align-items:center; justify-content:center; padding:18px; background:rgba(0,0,0,.76); backdrop-filter:blur(6px); }
+    .ae-repo-browser[hidden],
+    .ae-legacy-modal[hidden] { display:none !important; }
+    body.ae-modal-open { overflow:hidden !important; }
+    .ae-repo-browser-card,
+    .ae-legacy-card { width:min(860px,96vw); max-height:min(88vh,860px); display:flex; flex-direction:column; border:1px solid rgba(196,181,253,.42); border-radius:18px; background:linear-gradient(180deg,rgba(141,88,199,.11),rgba(255,255,255,.025)),#0d0b10; box-shadow:0 28px 80px rgba(0,0,0,.68); color:#f7f5fa; overflow:hidden; }
+    .ae-legacy-card { width:min(680px,96vw); }
+    .ae-repo-browser-head,
+    .ae-legacy-head { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; border-bottom:1px solid rgba(196,181,253,.22); background:#18131d; }
+    .ae-repo-browser-head h3,
+    .ae-legacy-head h2 { margin:0 !important; text-align:left !important; font-size:18px !important; letter-spacing:.02em !important; text-transform:none !important; }
+    .ae-repo-browser-head button,
+    .ae-legacy-close { flex:0 0 42px; width:42px !important; min-width:42px !important; height:42px !important; min-height:42px !important; padding:0 !important; border-radius:50% !important; font-size:22px !important; line-height:1 !important; }
+    .ae-repo-browser-tools { padding:12px 14px; border-bottom:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.025); }
+    .ae-repo-browser-tools input { width:100%; min-height:42px !important; }
+    .ae-repo-browser-summary { margin-top:7px; color:#b9b3c2; font-size:11px; font-weight:800; text-align:center; }
+    .ae-repo-browser-list { padding:11px 12px 14px; overflow:auto; display:grid; gap:8px; }
+    .ae-repo-record { display:grid; grid-template-columns:24px minmax(0,1fr); gap:10px; align-items:center; width:100%; text-align:left; border:1px solid rgba(196,181,253,.18); border-radius:12px; background:rgba(255,255,255,.035); padding:11px 12px; color:#fff; cursor:pointer; }
+    .ae-repo-record:hover,
+    .ae-repo-record:focus-within { border-color:rgba(196,181,253,.55); background:rgba(139,92,246,.12); }
+    .ae-repo-record input { width:18px !important; height:18px !important; accent-color:#8b5cf6; margin:0; }
+    .ae-repo-record-title { font-size:13px; font-weight:950; line-height:1.3; }
+    .ae-repo-record-meta { margin-top:3px; color:#aaa6b4; font-size:11px; line-height:1.4; }
+    .ae-repo-browser-empty { padding:28px 16px; text-align:center; color:#aaa6b4; border:1px dashed rgba(196,181,253,.22); border-radius:12px; }
+    .ae-repo-browser-footer { display:flex; justify-content:flex-end; gap:8px; padding:11px 13px; border-top:1px solid rgba(255,255,255,.1); background:#131016; }
+    .ae-repo-browser-footer[hidden] { display:none !important; }
+    .ae-legacy-body { padding:16px; overflow:auto; }
+    .ae-legacy-note { border:1px solid rgba(196,181,253,.22); border-left:4px solid #8d58c7; border-radius:12px; background:rgba(141,88,199,.07); padding:11px 12px; color:#d8d2dd; font-size:12px; line-height:1.5; }
+    .ae-legacy-actions { display:grid; grid-template-columns:1fr; gap:9px; margin-top:13px; }
+    .ae-legacy-actions button { width:100%; min-height:48px !important; background:linear-gradient(135deg,#5f3890,#8d58c7) !important; border-color:rgba(196,181,253,.44) !important; }
+    .ae-legacy-foot { margin-top:12px; color:#a9a1ae; font-size:11px; line-height:1.45; text-align:center; }
+
+    @media(max-width:700px) {
+      .ae-repo-actions { grid-template-columns:1fr !important; max-width:none; }
+      .ae-source-state { grid-template-columns:1fr; }
+      .ae-source-state button { width:100%; }
+      .ae-repo-browser,.ae-legacy-modal { padding:0; align-items:stretch; }
+      .ae-repo-browser-card,.ae-legacy-card { width:100%; max-width:none; max-height:none; height:100%; border-radius:0; }
+      .ae-repo-browser-footer { display:grid; grid-template-columns:1fr; }
+    }
+
   </style>
 </head>
 <body>
@@ -839,7 +925,7 @@
           <p class="eyebrow">Downtime Analytics</p>
           <h1><span class="title-gradient">Multi-Study</span><br />Totalizer</h1>
           <div class="mpg-rule"></div>
-          <p class="subtitle">Drop saved downtime-study JSON files into this standalone app to build a combined reason-code Pareto and preserve study timing, location, date, shift, line, and production reference data.</p>
+          <p class="subtitle">Load Downtime studies from the Engineering Study Repository to build combined Pareto analysis, compare study contributions, and save repeatable multi-study analysis packages.</p>
         </div>
       </div>
     </section>
@@ -847,33 +933,47 @@
     <section id="loadSection" class="box no-print">
       <div class="box-header">
         <div class="box-title">
-          <h2>Load JSON Study Files</h2>
-          <p class="box-subtitle">Drag and drop saved downtime-study JSON files only. Non-JSON files are rejected.</p>
-        </div>
-        <div class="button-row">
-          <label for="jsonInput" class="file-button primary">Select JSON Files</label>
-          <input id="jsonInput" type="file" accept=".json,application/json" multiple />
-          <label for="folderInput" class="file-button export">Load All JSONs from Folder</label>
-          <input id="folderInput" type="file" accept=".json,application/json" webkitdirectory directory multiple />
-          <button id="clearBtn" class="danger" type="button">Clear Loaded Data</button>
+          <h2>Downtime Study Sources</h2>
+          <p class="box-subtitle">Load verified Downtime studies from the shared Study Repository. Legacy local files remain available only through Legacy File Load.</p>
         </div>
       </div>
-      <div id="dropZone" class="drop-zone-grid">
-        <div id="jsonDropZone" class="drop-zone">
-          <div class="drop-title">Drop JSON files here</div>
-          <div class="drop-note">Use this area for one or more saved downtime-study .json files.</div>
-          <label for="jsonInputSecondary" class="file-button primary">Browse for JSON Files</label>
-          <input id="jsonInputSecondary" type="file" accept=".json,application/json" multiple />
+
+      <div class="ae-repo-panel">
+        <div class="ae-repo-head">
+          <h2>Study Repository</h2>
+          <div id="aeRepoBadge" class="ae-repo-badge"><span id="aeRepoDot" class="ae-repo-dot"></span><span data-ae-repo-badge-text>Repository Not Connected</span></div>
         </div>
-        <div id="folderDropZone" class="drop-zone folder-drop-zone">
-          <div class="drop-title">Drop a study folder here</div>
-          <div class="drop-note">Use this area for a parent folder. The app will scan subfolders and load every readable .json study file.</div>
-          <label for="folderInputSecondary" class="file-button export">Browse for Study Folder</label>
+        <div class="box-subtitle" style="text-align:center;color:#d4d4d8">
+          <b>Official analyzer workflow:</b> <b>LOAD DOWNTIME STUDIES</b> selects verified source studies from <b>02_DOWNTIME</b>. <b>SAVE ANALYSIS</b> writes the reusable analysis package to <b>04_MULTI_STUDY_DOWNTIME</b>. <b>OPEN SAVED ANALYSIS</b> restores the analysis and resolves its source studies from the repository.
+        </div>
+        <div class="ae-official-only-note">Study Repository is the normal source and the only analysis save destination. Legacy File Load never becomes a save destination.</div>
+        <div class="ae-repo-route">Source: 02_DOWNTIME → Analysis: 04_MULTI_STUDY_DOWNTIME</div>
+        <div class="ae-repo-actions">
+          <button id="aeRepoLoadSources" class="ae-repo-open" type="button">LOAD DOWNTIME STUDIES</button>
+          <button id="aeRepoSave" class="ae-repo-primary" type="button">SAVE ANALYSIS</button>
+          <button id="aeRepoOpenAnalysis" type="button">OPEN SAVED ANALYSIS</button>
+          <button id="aeLegacyLoadBtn" class="ae-legacy-button" type="button">LEGACY FILE LOAD</button>
+        </div>
+        <div class="ae-repo-utility"><button id="aeRepoConnect" type="button">REPOSITORY CONNECTION / RECONNECT</button></div>
+        <div id="aeRepoStatus" class="ae-repo-status">Repository not connected.</div>
+      </div>
+
+      <!-- Kept for legacy-loader compatibility; never shown in the normal workflow. -->
+      <div class="ae-retired-storage-controls" hidden>
+        <label for="jsonInput">Select JSON Files</label>
+        <input id="jsonInput" type="file" accept=".json,application/json" multiple />
+        <label for="folderInput">Load All JSONs from Folder</label>
+        <input id="folderInput" type="file" accept=".json,application/json" webkitdirectory directory multiple />
+        <div id="dropZone">
+          <input id="jsonInputSecondary" type="file" accept=".json,application/json" multiple />
           <input id="folderInputSecondary" type="file" accept=".json,application/json" webkitdirectory directory multiple />
         </div>
-        <div class="drop-warning drop-zone-grid-note">Accepted input: .json files only. Existing loaded files stay active until cleared. Folder drag-and-drop works best in Chrome or Edge. If your browser blocks folder drops, use Browse for Study Folder.</div>
       </div>
-      <div id="loadStatus" class="status">No JSON studies loaded yet.</div>
+
+      <div class="ae-source-state">
+        <div id="loadStatus" class="status">No Downtime studies loaded yet.</div>
+        <button id="clearBtn" class="danger" type="button">CLEAR LOADED DATA</button>
+      </div>
     </section>
 
     <section id="paretoSection" class="box">
@@ -883,7 +983,7 @@
           <p class="box-subtitle">Total downtime by reason code across every loaded study. Expand a code row to see the timing records behind that total.</p>
         </div>
         <div class="button-row no-print">
-          <button id="exportExcelBtn" class="export" type="button" disabled>Export Excel</button>
+          <button id="exportExcelBtn" class="export" type="button" disabled>EXPORT CURRENT VIEW TO EXCEL</button>
         </div>
       </div>
 
@@ -896,7 +996,7 @@
         <div class="metric"><div class="metric-label">Studies Loaded</div><div id="metricStudies" class="metric-value">0</div></div>
         <div class="metric"><div class="metric-label">Downtime Events</div><div id="metricEvents" class="metric-value">0</div></div>
         <div class="metric"><div class="metric-label">Total Downtime</div><div id="metricDowntime" class="metric-value">0:00:00</div></div>
-        <div class="metric"><div class="metric-label">Observed Time</div><div id="metricObserved" class="metric-value">0:00:00</div></div>
+        <div class="metric"><div class="metric-label">Included Study Time</div><div id="metricObserved" class="metric-value">0:00:00</div></div>
         <div class="metric"><div class="metric-label">Downtime %</div><div id="metricPercent" class="metric-value">0.0%</div></div>
       </div>
 
@@ -942,9 +1042,9 @@
           <div class="slicer-metric"><div class="slicer-metric-label">View Share</div><div id="slicerMetricShare" class="slicer-metric-value">0.0%</div></div>
         </div>
         <div class="study-slicer-metric-grid">
-          <div class="slicer-metric"><div class="slicer-metric-label">Optimum Production Count</div><div id="slicerMetricOptimum" class="slicer-metric-value">0</div></div>
-          <div class="slicer-metric"><div class="slicer-metric-label">Production Loss Count</div><div id="slicerMetricLoss" class="slicer-metric-value">0</div></div>
-          <div class="slicer-metric"><div class="slicer-metric-label">Utilization from Production</div><div id="slicerMetricUtilization" class="slicer-metric-value">0.0%</div></div>
+          <div class="slicer-metric"><div class="slicer-metric-label">Potential Production</div><div id="slicerMetricOptimum" class="slicer-metric-value">0</div></div>
+          <div class="slicer-metric"><div class="slicer-metric-label">Estimated Lost Production</div><div id="slicerMetricLoss" class="slicer-metric-value">0</div></div>
+          <div class="slicer-metric"><div class="slicer-metric-label">Availability</div><div id="slicerMetricUtilization" class="slicer-metric-value">0.0%</div></div>
         </div>
       </div>
 
@@ -1041,10 +1141,10 @@
       <div class="box-header">
         <div class="box-title">
           <h2>Data Calculation Tab</h2>
-          <p class="box-subtitle">Production calculation view by loaded file using production speed, observed time, and downtime totals.</p>
+          <p class="box-subtitle">Production opportunity and loss by source study using the source study scope, production speed, and included downtime.</p>
         </div>
       </div>
-      <p class="calc-note">Calculated as: projected production = production speed × observed hours. Production loss = production speed × downtime hours. Net available production = projected production − production loss.</p>
+      <p class="calc-note"><b>Potential production</b> = production speed × included study hours. <b>Estimated lost production</b> = production speed × included downtime hours. <b>Estimated available production</b> = production speed × included uptime hours. Source-study exclusions are respected before these totals are calculated.</p>
       <div class="table-toggle-row no-print">
         <div class="table-toggle-title">Production Calculation Table <span id="calculationTableSummary" class="table-toggle-note">Collapsed by default</span></div>
         <button id="toggleCalculationTableBtn" class="table-toggle-btn" type="button" data-table-toggle="calculationTableWrap">Expand Table</button>
@@ -1059,13 +1159,13 @@
               <th>Shift</th>
               <th>Line / Machine</th>
               <th>Production Speed</th>
-              <th>Observed Time</th>
-              <th>Observed Hours</th>
+              <th>Included Study Time</th>
+              <th>Included Study Hours</th>
               <th>Downtime Total</th>
               <th>Downtime Hours</th>
-              <th>Projected Production</th>
-              <th>Production Loss</th>
-              <th>Net Available Production</th>
+              <th>Potential Production</th>
+              <th>Estimated Lost Production</th>
+              <th>Estimated Available Production</th>
               <th>Downtime %</th>
             </tr>
           </thead>
@@ -1078,7 +1178,7 @@
       <div class="box-header">
         <div class="box-title">
           <h2>Loaded Study Reference</h2>
-          <p class="box-subtitle">Expandable reference table preserving location, date, shift, line, product, production speed, and timing records from each loaded JSON file.</p>
+          <p class="box-subtitle">Expandable source reference preserving repository identity, source-study scope, production speed, and timing records for each loaded Downtime study.</p>
         </div>
       </div>
       <div class="table-toggle-row no-print">
@@ -1097,13 +1197,13 @@
               <th>Line / Machine</th>
               <th>Product</th>
               <th>Observer</th>
-              <th>Study Time</th>
-              <th>Time Source</th>
+              <th>Included Study Time</th>
+              <th>Scope Source</th>
               <th>Total Downtime</th>
               <th>Downtime %</th>
               <th>Production Speed</th>
-              <th>Projected Units</th>
-              <th>Lost Units</th>
+              <th>Potential Units</th>
+              <th>Est. Lost Units</th>
               <th class="no-print">Remove</th>
             </tr>
           </thead>
@@ -1128,7 +1228,25 @@
     </div>
   </div>
 
-  <script>
+  \n<div id="aeRepoBrowser" class="ae-repo-browser" role="dialog" aria-modal="true" aria-labelledby="aeRepoBrowserTitle" hidden>
+  <div class="ae-repo-browser-card">
+    <div class="ae-repo-browser-head"><h3 id="aeRepoBrowserTitle">Study Repository</h3><button id="aeRepoBrowserClose" type="button" aria-label="Close">×</button></div>
+    <div class="ae-repo-browser-tools"><input id="aeRepoBrowserSearch" type="text" placeholder="Search plant, line, study, job, date, or ID" autocomplete="off"><div id="aeRepoBrowserSummary" class="ae-repo-browser-summary"></div></div>
+    <div id="aeRepoBrowserList" class="ae-repo-browser-list"></div>
+    <div id="aeRepoBrowserFooter" class="ae-repo-browser-footer" hidden><button id="aeRepoBrowserCancel" type="button">Cancel</button><button id="aeRepoBrowserOpenSelected" class="ae-repo-primary" type="button">Load Selected</button></div>
+  </div>
+</div>\n
+<div id="aeLegacyModal" class="ae-legacy-modal" role="dialog" aria-modal="true" aria-labelledby="aeLegacyTitle" hidden>
+  <div class="ae-legacy-card">
+    <div class="ae-legacy-head"><h2 id="aeLegacyTitle">Legacy File Load</h2><button id="aeLegacyClose" class="ae-legacy-close" type="button" aria-label="Close legacy file loader">×</button></div>
+    <div class="ae-legacy-body">
+      <div class="ae-legacy-note"><strong>Legacy source loading only.</strong> Use this to bring older Downtime Study JSON files into the current analysis when they are not stored under <b>02_DOWNTIME</b>. These source locations are never used as save destinations. <strong>SAVE ANALYSIS</strong> always writes to <b>04_MULTI_STUDY_DOWNTIME</b>.</div>
+      <div class="ae-legacy-actions"><button id="aeLegacyChooseFiles" type="button">Choose Legacy Downtime JSON Files</button><button id="aeLegacyChooseFolder" type="button">Choose Legacy Study Folder</button></div>
+      <div class="ae-legacy-foot">Repository-based source loading remains preferred because it preserves repeatable source identity and makes saved analyses easier to reopen.</div>
+    </div>
+  </div>
+</div>
+<script>
     'use strict';
 
     const state = {
@@ -1142,7 +1260,8 @@
       selectedShift: 'ALL',
       studySortMode: 'LOAD',
       tagGroups: [],
-      draggedTagCode: ''
+      draggedTagCode: '',
+      repositoryAnalysisId: ''
     };
 
     const els = {
@@ -1321,7 +1440,94 @@
     }
 
     function getProductionSpeed(data) {
-      return parseNumber(data.productionSpeed || data.formFields?.productionSpeed);
+      return parseNumber(data.studyInfo?.productionSpeed || data.productionSpeed || data.formFields?.productionSpeed);
+    }
+
+    function buildCodeDefinitionMap(data) {
+      const map = new Map();
+      (data.downtimeCodes || []).forEach(item => {
+        const code = normalizeCode(item.abbreviation || item.code || item.downtimeCode);
+        if (!map.has(code)) map.set(code, []);
+        map.get(code).push({
+          code,
+          category: String(item.category || '').trim().toUpperCase(),
+          includeInSummary: item.includeInSummary !== false,
+          description: String(item.description || '').trim()
+        });
+      });
+      return map;
+    }
+
+    function sourceEventIncluded(definitionMap, event) {
+      const code = normalizeCode(event?.downtimeCode || event?.downtimeCause || '');
+      if (!code || code === 'UNASSIGNED') return true;
+      const defs = definitionMap.get(code) || [];
+      if (!defs.length) return true;
+      const category = String(event?.downtimeCategory || '').trim().toUpperCase();
+      const exact = category ? defs.find(item => item.category === category) : null;
+      return (exact || defs[0]).includeInSummary !== false;
+    }
+
+    function getProvidedScopeSummary(data) {
+      const raw = data.studyScopeSummary || data.scopeSummary || data.analysisSummary?.studyScopeSummary || null;
+      if (!raw || typeof raw !== 'object') return null;
+      const pick = (...keys) => {
+        for (const key of keys) {
+          const value = parseNumber(raw[key]);
+          if (value || raw[key] === 0) return value;
+        }
+        return null;
+      };
+      const includedStudySeconds = pick('includedStudySeconds','IncludedStudySeconds');
+      const includedDowntimeSeconds = pick('includedDowntimeSeconds','DowntimeSeconds','IncludedDowntimeSeconds');
+      if (includedStudySeconds === null || includedDowntimeSeconds === null) return null;
+      const totalLoggedStudySeconds = pick('totalLoggedStudySeconds','ObservedSeconds','TotalLoggedStudySeconds');
+      const excludedEventSeconds = pick('excludedEventSeconds','ExcludedEventSeconds');
+      const includedUptimeSeconds = pick('includedUptimeSeconds','UptimeSeconds','IncludedUptimeSeconds');
+      return {
+        totalLoggedStudySeconds: totalLoggedStudySeconds ?? includedStudySeconds + (excludedEventSeconds || 0),
+        excludedEventSeconds: excludedEventSeconds || 0,
+        includedStudySeconds: Math.max(0, includedStudySeconds),
+        includedDowntimeSeconds: Math.max(0, includedDowntimeSeconds),
+        includedUptimeSeconds: includedUptimeSeconds === null ? Math.max(0, includedStudySeconds - includedDowntimeSeconds) : Math.max(0, includedUptimeSeconds),
+        source: 'Authoritative source summary'
+      };
+    }
+
+    function buildStudyScopeSummary(data) {
+      const observedInfo = getStudyObservedInfo(data);
+      const definitionMap = buildCodeDefinitionMap(data);
+      const completed = (data.events || []).filter(event => Number.isFinite(Number(event.durationSeconds)) && Number(event.durationSeconds) >= 0);
+      const includedEvents = completed.filter(event => sourceEventIncluded(definitionMap, event));
+      const excludedEvents = completed.filter(event => !sourceEventIncluded(definitionMap, event));
+      const provided = getProvidedScopeSummary(data);
+      const totalLoggedStudySeconds = provided ? provided.totalLoggedStudySeconds : Math.max(0, observedInfo.seconds);
+      const excludedEventSeconds = provided ? provided.excludedEventSeconds : excludedEvents.reduce((sum,event) => sum + parseNumber(event.durationSeconds), 0);
+      const includedStudySeconds = provided ? provided.includedStudySeconds : Math.max(0, totalLoggedStudySeconds - excludedEventSeconds);
+      const includedDowntimeSeconds = provided ? provided.includedDowntimeSeconds : includedEvents.reduce((sum,event) => sum + parseNumber(event.durationSeconds), 0);
+      const includedUptimeSeconds = provided ? provided.includedUptimeSeconds : Math.max(0, includedStudySeconds - includedDowntimeSeconds);
+      const productionSpeed = getProductionSpeed(data);
+      const potentialUnits = productionSpeed > 0 ? productionSpeed * includedStudySeconds / 3600 : 0;
+      const lostUnits = productionSpeed > 0 ? productionSpeed * includedDowntimeSeconds / 3600 : 0;
+      const availableUnits = productionSpeed > 0 ? productionSpeed * includedUptimeSeconds / 3600 : 0;
+      return {
+        definitionMap,
+        includedEvents,
+        excludedEvents,
+        totalLoggedStudySeconds,
+        excludedEventSeconds,
+        includedStudySeconds,
+        includedDowntimeSeconds,
+        includedUptimeSeconds,
+        availability: includedStudySeconds > 0 ? includedUptimeSeconds / includedStudySeconds : 0,
+        productionSpeed,
+        potentialUnits,
+        lostUnits,
+        availableUnits,
+        observedSource: observedInfo.source,
+        manualRaw: observedInfo.manualRaw,
+        source: provided?.source || `Derived from source study (${observedInfo.source})`
+      };
     }
 
     function buildCodeDescriptionMap(data) {
@@ -1470,7 +1676,7 @@
       await handleFiles(files);
     }
 
-    async function handleFiles(fileList) {
+    async function handleFiles(fileList, repositoryMetaByName = null) {
       const files = Array.from(fileList || []);
       if (!files.length) return;
 
@@ -1481,10 +1687,11 @@
 
       for (const file of jsonFiles) {
         try {
-          const text = await readFileAsText(file);
-          const data = JSON.parse(text);
+          const fileText = await readFileAsText(file);
+          const data = JSON.parse(fileText);
           if (!Array.isArray(data.events)) throw new Error('Missing events array');
-          addStudy(file.name, data);
+          const repositoryMeta = repositoryMetaByName instanceof Map ? repositoryMetaByName.get(file.name.toLowerCase()) || null : null;
+          addStudy(file.name, data, repositoryMeta);
           loaded += 1;
         } catch (err) {
           console.error(err);
@@ -1495,46 +1702,45 @@
       recalculateAndRender();
 
       const messages = [];
-      if (loaded) messages.push(`${loaded} JSON stud${loaded === 1 ? 'y' : 'ies'} loaded.`);
+      if (loaded) messages.push(`${loaded} Downtime stud${loaded === 1 ? 'y' : 'ies'} loaded.`);
       if (rejected.length) messages.push(`${rejected.length} non-JSON file${rejected.length === 1 ? '' : 's'} rejected.`);
-      if (failed) messages.push(`${failed} JSON file${failed === 1 ? '' : 's'} could not be parsed or did not match the study format.`);
-      if (!messages.length) messages.push('No valid JSON study files were loaded.');
+      if (failed) messages.push(`${failed} JSON file${failed === 1 ? '' : 's'} could not be parsed or did not match the Downtime study format.`);
+      if (!messages.length) messages.push('No valid Downtime study files were loaded.');
       setStatus(messages.join(' '), failed || rejected.length ? 'warn' : 'good');
 
-      els.jsonInput.value = '';
-      els.jsonInputSecondary.value = '';
+      if (els.jsonInput) els.jsonInput.value = '';
+      if (els.jsonInputSecondary) els.jsonInputSecondary.value = '';
       if (els.folderInput) els.folderInput.value = '';
       if (els.folderInputSecondary) els.folderInputSecondary.value = '';
     }
 
-    function addStudy(fileName, data) {
+    function addStudy(fileName, data, repositoryMeta = null) {
       const studyInfo = data.studyInfo || {};
       const formFields = data.formFields || {};
       const codeDescriptions = buildCodeDescriptionMap(data);
-      const observedInfo = getStudyObservedInfo(data);
-      const observedSeconds = observedInfo.seconds;
-      const productionSpeed = getProductionSpeed(data);
-      const events = (data.events || []).map((event, index) => {
-        const code = normalizeCode(event.downtimeCode);
+      const scope = buildStudyScopeSummary(data);
+      const allEvents = (data.events || []).map((event, index) => {
+        const code = normalizeCode(event.downtimeCode || event.downtimeCause);
         const durationSeconds = parseNumber(event.durationSeconds);
         return {
           eventNumber: event.eventNumber || index + 1,
           code,
+          category: String(event.downtimeCategory || '').trim(),
           durationSeconds,
           startTime: event.startTime || '',
           stopTime: event.stopTime || '',
           startTimestamp: event.startTimestamp || '',
           stopTimestamp: event.stopTimestamp || '',
           notes: event.notes || '',
-          description: codeDescriptions.get(code) || ''
+          description: codeDescriptions.get(code) || '',
+          includedInSourceSummary: sourceEventIncluded(scope.definitionMap, event)
         };
       }).filter(event => event.durationSeconds > 0);
-
-      const totalDowntimeSeconds = events.reduce((sum, event) => sum + event.durationSeconds, 0);
-      const projectedUnits = productionSpeed && observedSeconds ? productionSpeed * (observedSeconds / 3600) : 0;
-      const lostUnits = productionSpeed && totalDowntimeSeconds ? productionSpeed * (totalDowntimeSeconds / 3600) : 0;
+      const events = allEvents.filter(event => event.includedInSourceSummary);
+      const sourceExcludedEvents = allEvents.filter(event => !event.includedInSourceSummary);
 
       const id = `${Date.now()}_${Math.random().toString(16).slice(2)}`;
+      const sourceRepository = data.repository && typeof data.repository === 'object' ? data.repository : {};
       state.studies.push({
         id,
         fileName,
@@ -1547,15 +1753,27 @@
         product: studyInfo.studyProduct || formFields.studyProduct || '',
         observer: studyInfo.studyObserver || formFields.studyObserver || data.operatorName || formFields.operatorName || '',
         objective: studyInfo.studyObjective || formFields.studyObjective || '',
-        productionSpeed,
-        observedSeconds,
-        observedSource: observedInfo.source,
-        manualDurationRaw: observedInfo.manualRaw,
-        totalDowntimeSeconds,
-        projectedUnits,
-        lostUnits,
+        productionSpeed: scope.productionSpeed,
+        totalLoggedStudySeconds: scope.totalLoggedStudySeconds,
+        excludedEventSeconds: scope.excludedEventSeconds,
+        observedSeconds: scope.includedStudySeconds,
+        uptimeSeconds: scope.includedUptimeSeconds,
+        observedSource: scope.source,
+        rawObservedSource: scope.observedSource,
+        manualDurationRaw: scope.manualRaw,
+        totalDowntimeSeconds: scope.includedDowntimeSeconds,
+        potentialUnits: scope.potentialUnits,
+        projectedUnits: scope.potentialUnits,
+        lostUnits: scope.lostUnits,
+        availableUnits: scope.availableUnits,
+        availability: scope.availability,
+        sourceExcludedEventCount: sourceExcludedEvents.length,
+        repositoryRecordId: repositoryMeta?.recordId || sourceRepository.recordId || '',
+        repositoryRelativePath: repositoryMeta?.relativePath || sourceRepository.relativePath || '',
+        repositoryFilePath: repositoryMeta?.filePath || '',
         segments: Array.isArray(data.studySegments) ? data.studySegments : [],
         events,
+        sourceExcludedEvents,
         codeDescriptions
       });
     }
@@ -2038,7 +2256,7 @@
 
     function getProductionMetricsForVisibleStudies() {
       return getVisibleStudies().reduce((acc, study) => {
-        const optimum = study.productionSpeed && study.observedSeconds ? study.productionSpeed * (study.observedSeconds / 3600) : 0;
+        const optimum = parseNumber(study.potentialUnits || study.projectedUnits);
         const includedDowntimeSeconds = study.events
           .filter(event => isCodeIncluded(event.code))
           .reduce((sum, event) => sum + event.durationSeconds, 0);
@@ -2427,16 +2645,16 @@
       const totals = state.studies.reduce((acc, study) => {
         acc.observedSeconds += study.observedSeconds;
         acc.downtimeSeconds += study.totalDowntimeSeconds;
-        acc.projectedUnits += study.projectedUnits;
+        acc.projectedUnits += parseNumber(study.potentialUnits || study.projectedUnits);
         acc.lostUnits += study.lostUnits;
-        acc.netUnits += Math.max(0, study.projectedUnits - study.lostUnits);
+        acc.netUnits += parseNumber(study.availableUnits || Math.max(0, (study.potentialUnits || study.projectedUnits) - study.lostUnits));
         return acc;
       }, { observedSeconds: 0, downtimeSeconds: 0, projectedUnits: 0, lostUnits: 0, netUnits: 0 });
 
       const rows = state.studies.map(study => {
         const observedHours = study.observedSeconds / 3600;
         const downtimeHours = study.totalDowntimeSeconds / 3600;
-        const netUnits = Math.max(0, study.projectedUnits - study.lostUnits);
+        const netUnits = parseNumber(study.availableUnits || Math.max(0, (study.potentialUnits || study.projectedUnits) - study.lostUnits));
         const downtimePercent = study.observedSeconds ? study.totalDowntimeSeconds / study.observedSeconds : 0;
         return `
           <tr>
@@ -2450,7 +2668,7 @@
             <td class="number">${observedHours.toFixed(2)}</td>
             <td class="number">${formatDuration(study.totalDowntimeSeconds)}</td>
             <td class="number">${downtimeHours.toFixed(2)}</td>
-            <td class="number">${study.projectedUnits ? formatNumber(study.projectedUnits) : '0'}</td>
+            <td class="number">${(study.potentialUnits || study.projectedUnits) ? formatNumber(study.potentialUnits || study.projectedUnits) : '0'}</td>
             <td class="number">${study.lostUnits ? formatNumber(study.lostUnits) : '0'}</td>
             <td class="number">${netUnits ? formatNumber(netUnits) : '0'}</td>
             <td class="number">${formatPercent(downtimePercent)}</td>
@@ -2500,7 +2718,7 @@
             <td class="number">${formatDuration(study.totalDowntimeSeconds)}</td>
             <td class="number">${formatPercent(downtimePercent)}</td>
             <td class="number">${study.productionSpeed ? `${formatNumber(study.productionSpeed)} / hr` : ''}</td>
-            <td class="number">${study.projectedUnits ? formatNumber(study.projectedUnits) : ''}</td>
+            <td class="number">${(study.potentialUnits || study.projectedUnits) ? formatNumber(study.potentialUnits || study.projectedUnits) : ''}</td>
             <td class="number">${study.lostUnits ? formatNumber(study.lostUnits) : ''}</td>
             <td class="no-print"><button class="remove-study-btn" type="button" data-remove-study-id="${escapeHtml(study.id)}">Remove</button></td>
           </tr>`;
@@ -2512,9 +2730,7 @@
     }
 
     function renderStudyDetails(study) {
-      const sourceNote = study.observedSource === 'Manual total'
-        ? `<div class="nested-title">Observed time source: Manual total entered in source study (${escapeHtml(study.manualDurationRaw)} = ${formatDuration(study.observedSeconds)}). This overrides calculated segment time.</div>`
-        : `<div class="nested-title">Observed time source: ${escapeHtml(study.observedSource || 'Calculated')} (${formatDuration(study.observedSeconds)}).</div>`;
+      const sourceNote = `<div class="nested-title">Source scope: ${escapeHtml(study.observedSource || 'Derived from source study')} • Logged ${formatDuration(study.totalLoggedStudySeconds || study.observedSeconds)} • Source-excluded ${formatDuration(study.excludedEventSeconds || 0)} • Included study ${formatDuration(study.observedSeconds)} • Included downtime ${formatDuration(study.totalDowntimeSeconds)} • Included uptime ${formatDuration(study.uptimeSeconds || Math.max(0,study.observedSeconds-study.totalDowntimeSeconds))}${study.sourceExcludedEventCount ? ` • ${study.sourceExcludedEventCount} source-excluded event${study.sourceExcludedEventCount===1?'':'s'}` : ''}.</div>`;
       const segmentRows = study.segments.length ? study.segments.map((seg, index) => `
         <tr>
           <td class="number">${index + 1}</td>
@@ -2534,22 +2750,33 @@
           <td class="number">${formatDuration(event.durationSeconds)}</td>
           <td class="left">${escapeHtml(event.notes)}</td>
         </tr>`).join('');
+      const sourceExcludedRows = (study.sourceExcludedEvents || []).map(event => `
+        <tr>
+          <td class="number">${escapeHtml(event.eventNumber)}</td>
+          <td><strong>${escapeHtml(event.code)}</strong></td>
+          <td>${escapeHtml(event.startTimestamp)}</td>
+          <td>${escapeHtml(event.stopTimestamp)}</td>
+          <td class="number">${formatDuration(event.durationSeconds)}</td>
+          <td class="left">${escapeHtml(event.notes)}</td>
+        </tr>`).join('');
 
       return `
+        ${sourceNote}
         <div class="nested-title">Study timing segments</div>
         <div class="table-scroll" style="margin-bottom: 14px;">
           <table class="nested-table">
-            <thead><tr><th>Segment</th><th>Start Timestamp</th><th>Stop Timestamp</th><th>Observed Time</th></tr></thead>
+            <thead><tr><th>Segment</th><th>Start Timestamp</th><th>Stop Timestamp</th><th>Segment Time</th></tr></thead>
             <tbody>${segmentRows}</tbody>
           </table>
         </div>
-        <div class="nested-title">Event timing records</div>
+        <div class="nested-title">Included downtime event timing records</div>
         <div class="table-scroll">
           <table class="nested-table">
             <thead><tr><th>Event #</th><th>Code</th><th>Start</th><th>Stop</th><th>Start Timestamp</th><th>Stop Timestamp</th><th>Duration</th><th class="left">Notes</th></tr></thead>
-            <tbody>${eventRows || '<tr><td colspan="8" class="empty-state">No completed downtime events found.</td></tr>'}</tbody>
+            <tbody>${eventRows || '<tr><td colspan="8" class="empty-state">No included downtime events found.</td></tr>'}</tbody>
           </table>
-        </div>`;
+        </div>
+        ${sourceExcludedRows ? `<div class="nested-title" style="margin-top:14px">Source-excluded events — preserved for audit, omitted from totals</div><div class="table-scroll"><table class="nested-table"><thead><tr><th>Event #</th><th>Code</th><th>Start Timestamp</th><th>Stop Timestamp</th><th>Duration</th><th class="left">Notes</th></tr></thead><tbody>${sourceExcludedRows}</tbody></table></div>` : ''}`;
     }
 
     function setStatus(message, type = '') {
@@ -2569,8 +2796,9 @@
       state.studySortMode = 'LOAD';
       state.tagGroups = [];
       state.draggedTagCode = '';
+      state.repositoryAnalysisId = '';
       recalculateAndRender();
-      setStatus('Loaded data cleared. Drop JSON study files to begin.', 'warn');
+      setStatus('Loaded data cleared. Use Load Downtime Studies or Legacy File Load to begin.', 'warn');
     }
 
     function tableRowsForExcel() {
@@ -2582,11 +2810,11 @@
         ['Studies in Current Pareto View', getVisibleStudies().length],
         ['Downtime Events', totals.totalEvents],
         ['Total Downtime', formatDuration(totals.downtimeSeconds)],
-        ['Observed Time', formatDuration(totals.observedSeconds)],
+        ['Included Study Time', formatDuration(totals.observedSeconds)],
         ['Downtime %', totals.observedSeconds ? formatPercent(totals.downtimeSeconds / totals.observedSeconds) : '0.0%'],
-        ['Optimum Production Count', formatNumber(getProductionMetricsForVisibleStudies().optimumUnits)],
-        ['Production Loss Count', formatNumber(getProductionMetricsForVisibleStudies().lossUnits)],
-        ['Production Utilization', getProductionMetricsForVisibleStudies().optimumUnits ? formatPercent(Math.max(0, getProductionMetricsForVisibleStudies().optimumUnits - getProductionMetricsForVisibleStudies().lossUnits) / getProductionMetricsForVisibleStudies().optimumUnits) : '0.0%'],
+        ['Potential Production', formatNumber(getProductionMetricsForVisibleStudies().optimumUnits)],
+        ['Estimated Lost Production', formatNumber(getProductionMetricsForVisibleStudies().lossUnits)],
+        ['Availability', getProductionMetricsForVisibleStudies().optimumUnits ? formatPercent(Math.max(0, getProductionMetricsForVisibleStudies().optimumUnits - getProductionMetricsForVisibleStudies().lossUnits) / getProductionMetricsForVisibleStudies().optimumUnits) : '0.0%'],
         ['Included Reason Codes', getCodeSummaryRowsForVisibleStudies().filter(row => isCodeIncluded(row.code)).map(row => row.code).join(', ') || 'None'],
         ['Excluded Reason Codes', getCodeSummaryRowsForVisibleStudies().filter(row => !isCodeIncluded(row.code)).map(row => row.code).join(', ') || 'None']
       ];
@@ -2597,19 +2825,19 @@
       ];
 
       const studyReference = [
-        ['File','Location','Date','Shift','Line / Machine','Product','Observer','Study Time','Time Source','Total Downtime','Downtime %','Production Speed','Projected Units','Lost Units'],
-        ...getVisibleStudies().map(study => [study.fileName, study.location, study.date, study.shift, study.line, study.product, study.observer, formatDuration(study.observedSeconds), study.observedSource || 'Calculated', formatDuration(study.totalDowntimeSeconds), study.observedSeconds ? formatPercent(study.totalDowntimeSeconds / study.observedSeconds) : '0.0%', study.productionSpeed, Math.round(study.projectedUnits), Math.round(study.lostUnits)])
+        ['File','Location','Date','Shift','Line / Machine','Product','Observer','Included Study Time','Scope Source','Total Downtime','Downtime %','Production Speed','Potential Units','Estimated Lost Units'],
+        ...getVisibleStudies().map(study => [study.fileName, study.location, study.date, study.shift, study.line, study.product, study.observer, formatDuration(study.observedSeconds), study.observedSource || 'Calculated', formatDuration(study.totalDowntimeSeconds), study.observedSeconds ? formatPercent(study.totalDowntimeSeconds / study.observedSeconds) : '0.0%', study.productionSpeed, Math.round(study.potentialUnits || study.projectedUnits), Math.round(study.lostUnits)])
       ];
 
       const dataCalculation = [
-        ['File','Location','Date','Shift','Line / Machine','Production Speed / Hr','Observed Time','Observed Hours','Downtime Total','Downtime Hours','Projected Production','Production Loss','Net Available Production','Downtime %'],
+        ['File','Location','Date','Shift','Line / Machine','Production Speed / Hr','Included Study Time','Included Study Hours','Downtime Total','Downtime Hours','Potential Production','Estimated Lost Production','Estimated Available Production','Downtime %'],
         ...state.studies.map(study => {
           const observedHours = study.observedSeconds / 3600;
           const downtimeHours = study.totalDowntimeSeconds / 3600;
-          const netUnits = Math.max(0, study.projectedUnits - study.lostUnits);
-          return [study.fileName, study.location, study.date, study.shift, study.line, study.productionSpeed, formatDuration(study.observedSeconds), observedHours.toFixed(2), formatDuration(study.totalDowntimeSeconds), downtimeHours.toFixed(2), Math.round(study.projectedUnits), Math.round(study.lostUnits), Math.round(netUnits), study.observedSeconds ? formatPercent(study.totalDowntimeSeconds / study.observedSeconds) : '0.0%'];
+          const netUnits = parseNumber(study.availableUnits || Math.max(0, (study.potentialUnits || study.projectedUnits) - study.lostUnits));
+          return [study.fileName, study.location, study.date, study.shift, study.line, study.productionSpeed, formatDuration(study.observedSeconds), observedHours.toFixed(2), formatDuration(study.totalDowntimeSeconds), downtimeHours.toFixed(2), Math.round(study.potentialUnits || study.projectedUnits), Math.round(study.lostUnits), Math.round(netUnits), study.observedSeconds ? formatPercent(study.totalDowntimeSeconds / study.observedSeconds) : '0.0%'];
         }),
-        ['Total','All loaded studies','','','','Mixed', formatDuration(state.studies.reduce((sum, study) => sum + study.observedSeconds, 0)), (state.studies.reduce((sum, study) => sum + study.observedSeconds, 0) / 3600).toFixed(2), formatDuration(state.studies.reduce((sum, study) => sum + study.totalDowntimeSeconds, 0)), (state.studies.reduce((sum, study) => sum + study.totalDowntimeSeconds, 0) / 3600).toFixed(2), Math.round(state.studies.reduce((sum, study) => sum + study.projectedUnits, 0)), Math.round(state.studies.reduce((sum, study) => sum + study.lostUnits, 0)), Math.round(state.studies.reduce((sum, study) => sum + Math.max(0, study.projectedUnits - study.lostUnits), 0)), state.studies.reduce((sum, study) => sum + study.observedSeconds, 0) ? formatPercent(state.studies.reduce((sum, study) => sum + study.totalDowntimeSeconds, 0) / state.studies.reduce((sum, study) => sum + study.observedSeconds, 0)) : '0.0%']
+        ['Total','All loaded studies','','','','Mixed', formatDuration(state.studies.reduce((sum, study) => sum + study.observedSeconds, 0)), (state.studies.reduce((sum, study) => sum + study.observedSeconds, 0) / 3600).toFixed(2), formatDuration(state.studies.reduce((sum, study) => sum + study.totalDowntimeSeconds, 0)), (state.studies.reduce((sum, study) => sum + study.totalDowntimeSeconds, 0) / 3600).toFixed(2), Math.round(state.studies.reduce((sum, study) => sum + parseNumber(study.potentialUnits || study.projectedUnits), 0)), Math.round(state.studies.reduce((sum, study) => sum + study.lostUnits, 0)), Math.round(state.studies.reduce((sum, study) => sum + parseNumber(study.availableUnits || Math.max(0, (study.potentialUnits || study.projectedUnits) - study.lostUnits)), 0)), state.studies.reduce((sum, study) => sum + study.observedSeconds, 0) ? formatPercent(state.studies.reduce((sum, study) => sum + study.totalDowntimeSeconds, 0) / state.studies.reduce((sum, study) => sum + study.observedSeconds, 0)) : '0.0%']
       ];
 
       const eventTiming = [
@@ -2622,12 +2850,17 @@
         ...getVisibleStudies().flatMap(study => study.segments.map((seg, index) => [study.fileName, study.location, study.date, study.shift, study.line, study.observedSource || 'Calculated', index + 1, seg.startTimestamp || '', seg.stopTimestamp || '', formatDuration(secondsBetween(seg.startTimestamp, seg.stopTimestamp)), Math.round(secondsBetween(seg.startTimestamp, seg.stopTimestamp))]))
       ];
 
+      const sourceExcludedEvents = [
+        ['File','Location','Date','Shift','Line / Machine','Event #','Reason Code','Category','Start Timestamp','Stop Timestamp','Duration','Duration Seconds','Notes','Source Treatment'],
+        ...getVisibleStudies().flatMap(study => (study.sourceExcludedEvents || []).map(event => [study.fileName,study.location,study.date,study.shift,study.line,event.eventNumber,event.code,event.category||'',event.startTimestamp,event.stopTimestamp,formatDuration(event.durationSeconds),event.durationSeconds,event.notes,'Excluded by source Downtime Study Include in Summary setting']))
+      ];
+
       const tagGroups = [
         ['Group Name','Tag Code','Group View Mode'],
         ...state.tagGroups.flatMap(group => group.codes.size ? Array.from(group.codes).sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' })).map(code => [group.name, code, getGroupMode(group)]) : [[group.name, '', getGroupMode(group)]])
       ];
 
-      return { summary, pareto, studyReference, dataCalculation, eventTiming, segmentTiming, tagGroups };
+      return { summary, pareto, studyReference, dataCalculation, eventTiming, sourceExcludedEvents, segmentTiming, tagGroups };
     }
 
     function rowsToHtmlTable(name, rows) {
@@ -2637,22 +2870,8 @@
     function exportExcel() {
       if (!state.studies.length) return;
       const sheets = tableRowsForExcel();
-      const html = `
-        <html><head><meta charset="UTF-8"><style>
-          table { border-collapse: collapse; margin-bottom: 24px; }
-          caption { font-weight: bold; font-size: 16px; margin: 8px 0; text-align: left; }
-          th, td { border: 1px solid #999; padding: 6px; mso-number-format:'\\@'; }
-          th { background: #111; color: #fff; }
-        </style></head><body>
-          ${rowsToHtmlTable('Summary', sheets.summary)}
-          ${rowsToHtmlTable('Pareto Breakdown', sheets.pareto)}
-          ${rowsToHtmlTable('Study Reference', sheets.studyReference)}
-          ${rowsToHtmlTable('Data Calculation', sheets.dataCalculation)}
-          ${rowsToHtmlTable('Event Timing Records', sheets.eventTiming)}
-          ${rowsToHtmlTable('Study Segment Timing', sheets.segmentTiming)}
-          ${rowsToHtmlTable('Tag Group Mapping', sheets.tagGroups)}
-        </body></html>`;
-      downloadBlob(html, 'MPG_Multi_Study_Downtime_Totalizer.xls', 'application/vnd.ms-excel');
+      const html = `<html><head><meta charset="UTF-8"><style>body{font-family:Segoe UI,Arial,sans-serif}table{border-collapse:collapse;margin-bottom:24px;width:100%}caption{font-weight:bold;font-size:16px;margin:8px 0;text-align:left}th,td{border:1px solid #999;padding:6px;mso-number-format:'\@'}th{background:#111;color:#fff}</style></head><body>${rowsToHtmlTable('Summary',sheets.summary)}${rowsToHtmlTable('Pareto Breakdown',sheets.pareto)}${rowsToHtmlTable('Study Reference',sheets.studyReference)}${rowsToHtmlTable('Data Calculation',sheets.dataCalculation)}${rowsToHtmlTable('Event Timing Records',sheets.eventTiming)}${rowsToHtmlTable('Source-Excluded Event Audit',sheets.sourceExcludedEvents)}${rowsToHtmlTable('Study Segment Timing',sheets.segmentTiming)}${rowsToHtmlTable('Tag Group Mapping',sheets.tagGroups)}</body></html>`;
+      downloadBlob(html, 'Abel_Engineering_Multi_Study_Downtime_Totalizer.xls', 'application/vnd.ms-excel');
     }
 
     function downloadBlob(content, filename, mimeType) {
@@ -2998,6 +3217,161 @@
 
 
     recalculateAndRender();
-  </script>
+  
+
+const AE_REPO_ALLOWED_ROOT_NAMES=new Set(['study repository','engineering study hub - study repository']);
+const AE_REPO_SCHEMA_FILE='LIBRARY_SCHEMA.json',AE_REPO_SCHEMA_FOLDER='_SYSTEM',AE_REPO_SCHEMA_TYPE='AbelEngineering.StudyRepository',AE_REPO_SCHEMA_VERSION=1;
+const AE_REPO_ROUTES=['01_CYCLE_TIME','02_DOWNTIME','03_TAKT_MATERIAL_FLOW','04_MULTI_STUDY_DOWNTIME','90_TEMPLATES'];
+const AE_REPO_IDB_NAME='AbelEngineeringStudyRepositoryHandles',AE_REPO_IDB_STORE='handles',AE_REPO_IDB_KEY='studyRepositoryRoot';
+let aeRepoRootHandle=null,aeRepoBrowserRecords=[],aeRepoBrowserFiltered=[],aeRepoBrowserMulti=false,aeRepoBrowserCallback=null;
+function aeRepoClean(v){return String(v??'').trim()}
+function aeRepoSafe(v,fallback='UNSPECIFIED',max=64){let x=aeRepoClean(v).replace(/&/g,' and ').replace(/[<>:"/\\|?*\x00-\x1F]/g,' ').replace(/\s+/g,' ').trim().replace(/[. ]+$/g,'');if(!x)x=fallback;return x.slice(0,max)}
+function aeRepoToken(v,fallback='NA',max=54){return aeRepoSafe(v,fallback,max).replace(/\s+/g,'_')}
+function aeRepoDateParts(raw){const m=String(raw||'').match(/^(\d{4})-(\d{2})-(\d{2})/),d=m?`${m[1]}-${m[2]}-${m[3]}`:new Date().toISOString().slice(0,10);return{day:d,year:d.slice(0,4),month:d.slice(0,7),compact:d.replaceAll('-','')}}
+function aeRepoRandom4(){const a=new Uint32Array(1);try{crypto.getRandomValues(a);return(a[0]%1679616).toString(36).toUpperCase().padStart(4,'0')}catch{return Math.random().toString(36).slice(2,6).toUpperCase().padEnd(4,'0')}}
+function aeRepoRootNameApproved(name){return AE_REPO_ALLOWED_ROOT_NAMES.has(aeRepoClean(name).toLowerCase())}
+function aeRepoStatus(message,type=''){const el=document.getElementById('aeRepoStatus'),badge=document.getElementById('aeRepoBadge'),dot=document.getElementById('aeRepoDot');if(el){el.textContent=message;el.className='ae-repo-status'+(type?' '+type:'')}if(dot){dot.className='ae-repo-dot'+(type?' '+type:'')}if(badge){const label=type==='good'?'Repository Connected':type==='bad'?'Repository Error':type==='warn'?'Repository Attention':'Repository Not Connected';const span=badge.querySelector('[data-ae-repo-badge-text]');if(span)span.textContent=label}}
+function aeRepoOpenDb(){return new Promise((resolve,reject)=>{try{const req=indexedDB.open(AE_REPO_IDB_NAME,1);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains(AE_REPO_IDB_STORE))db.createObjectStore(AE_REPO_IDB_STORE)};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)}catch(e){reject(e)}})}
+async function aeRepoRememberHandle(handle){try{const db=await aeRepoOpenDb();await new Promise((resolve,reject)=>{const tx=db.transaction(AE_REPO_IDB_STORE,'readwrite');tx.objectStore(AE_REPO_IDB_STORE).put(handle,AE_REPO_IDB_KEY);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});db.close()}catch(e){console.warn('Repository handle could not be remembered.',e)}}
+async function aeRepoLoadRememberedHandle(){try{const db=await aeRepoOpenDb(),h=await new Promise((resolve,reject)=>{const tx=db.transaction(AE_REPO_IDB_STORE,'readonly'),r=tx.objectStore(AE_REPO_IDB_STORE).get(AE_REPO_IDB_KEY);r.onsuccess=()=>resolve(r.result||null);r.onerror=()=>reject(r.error)});db.close();return h}catch(e){console.warn('Remembered repository handle unavailable.',e);return null}}
+async function aeRepoPermission(handle,mode='readwrite',prompt=true){if(!handle)return false;try{if(typeof handle.queryPermission!=='function')return true;let p=await handle.queryPermission({mode});if(p!=='granted'&&prompt&&typeof handle.requestPermission==='function')p=await handle.requestPermission({mode});return p==='granted'}catch{return false}}
+async function aeRepoEnsureDir(root,parts,create=true){let d=root;for(const raw of parts){const name=aeRepoSafe(raw,'UNSPECIFIED',70);d=await d.getDirectoryHandle(name,{create})}return d}
+async function aeRepoWriteRaw(directory,name,data,type='application/octet-stream'){const blob=data instanceof Blob?data:new Blob([data],{type}),h=await directory.getFileHandle(aeRepoSafe(name,'FILE',120),{create:true}),w=await h.createWritable();await w.write(blob);await w.close();const f=await h.getFile();if(f.size!==blob.size)throw new Error(`${name} verification failed: saved ${f.size} bytes, expected ${blob.size}.`);return{handle:h,file:f,size:f.size,type:blob.type}}
+async function aeRepoHashText(text){try{const b=new TextEncoder().encode(text),d=await crypto.subtle.digest('SHA-256',b);return[...new Uint8Array(d)].map(x=>x.toString(16).padStart(2,'0')).join('')}catch{return''}}
+async function aeRepoWriteJson(directory,name,value){const text=JSON.stringify(value,null,2),r=await aeRepoWriteRaw(directory,name,text,'application/json'),stored=(await r.file.text()).replace(/^\uFEFF/,'');let parsed;try{parsed=JSON.parse(stored)}catch(e){throw new Error(`${name} was written but is not valid JSON: ${e.message}`)}if(stored!==text)throw new Error(`${name} was written but did not match the generated JSON.`);return{...r,sha256:await aeRepoHashText(stored),parsed}}
+async function aeRepoProbe(root){const n=`.__abel_repo_write_test_${Date.now()}.tmp`;try{const h=await root.getFileHandle(n,{create:true}),w=await h.createWritable();await w.write('Abel Engineering repository write test');await w.close();const f=await h.getFile();if(!f.size)throw new Error('write test returned an empty file');await root.removeEntry(n)}catch(e){throw new Error(`The selected Study Repository is not writable. ${e.message||e}`)}}
+function aeRepoSchemaPayload(){return{fileType:AE_REPO_SCHEMA_TYPE,schemaVersion:AE_REPO_SCHEMA_VERSION,libraryName:'Engineering Study Hub - Study Repository',acceptedRootFolderNames:['Engineering Study Hub - Study Repository','Study Repository'],routes:{cycleTime:'01_CYCLE_TIME',downtime:'02_DOWNTIME',taktMaterialFlow:'03_TAKT_MATERIAL_FLOW',multiStudyDowntime:'04_MULTI_STUDY_DOWNTIME',templates:'90_TEMPLATES'},updatedAt:new Date().toISOString()}}
+async function aeRepoValidateRoot(root,{initialize=false,probe=false}={}){if(!root)throw new Error('No Study Repository folder is selected.');if(!aeRepoRootNameApproved(root.name))throw new Error('Select the folder named exactly “Engineering Study Hub - Study Repository” or “Study Repository”.');if(!await aeRepoPermission(root,'readwrite',initialize))throw new Error('Read/write permission to the Study Repository was not granted.');let sys;try{sys=await root.getDirectoryHandle(AE_REPO_SCHEMA_FOLDER,{create:initialize})}catch(e){throw new Error(`Unable to open ${AE_REPO_SCHEMA_FOLDER}. ${e.message||e}`)};let schema=null;try{const h=await sys.getFileHandle(AE_REPO_SCHEMA_FILE),f=await h.getFile(),t=(await f.text()).replace(/^\uFEFF/,'').trim();if(t)schema=JSON.parse(t)}catch(e){if(e?.name!=='NotFoundError'&&!initialize)throw e}if(schema&&schema.fileType!==AE_REPO_SCHEMA_TYPE)throw new Error(`${AE_REPO_SCHEMA_FOLDER}/${AE_REPO_SCHEMA_FILE} belongs to a different repository type.`);if(initialize&&!schema)await aeRepoWriteJson(sys,AE_REPO_SCHEMA_FILE,aeRepoSchemaPayload());if(initialize){for(const r of AE_REPO_ROUTES)await root.getDirectoryHandle(r,{create:true})}if(probe)await aeRepoProbe(root);return true}
+async function aeRepoConnect(){if(!window.showDirectoryPicker)throw new Error('Study Repository folder access requires desktop Microsoft Edge or Google Chrome with the File System Access API. Use Legacy File Load for older local files. Repository saving requires supported desktop folder access.');const h=await window.showDirectoryPicker({mode:'readwrite'});await aeRepoValidateRoot(h,{initialize:true,probe:true});aeRepoRootHandle=h;await aeRepoRememberHandle(h);aeRepoStatus(`Connected to ${h.name}. Direct saves are verified locally; OneDrive handles SharePoint/Teams synchronization.`,'good');return h}
+async function aeRepoGetRoot({interactive=true,probe=false}={}){let h=aeRepoRootHandle||await aeRepoLoadRememberedHandle();if(h&&aeRepoRootNameApproved(h.name)&&await aeRepoPermission(h,'readwrite',interactive)){try{await aeRepoValidateRoot(h,{initialize:true,probe});aeRepoRootHandle=h;await aeRepoRememberHandle(h);aeRepoStatus(`Connected to ${h.name}.`,'good');return h}catch(e){console.warn(e)}}if(!interactive){aeRepoStatus('Study Repository connection is saved, but browser permission must be re-granted before use.','warn');return null}return aeRepoConnect()}
+async function aeRepoBootstrap(){try{const h=await aeRepoLoadRememberedHandle();if(!h){aeRepoStatus('Connect the Study Repository once. Save/Open will then reuse it whenever browser permission remains available.','');return}aeRepoRootHandle=h;if(!aeRepoRootNameApproved(h.name)){aeRepoStatus('The remembered folder no longer matches the approved Study Repository name. Reconnect the repository.','warn');return}const p=await aeRepoPermission(h,'readwrite',false);if(p==='granted'||p===true){await aeRepoValidateRoot(h,{initialize:false,probe:false});aeRepoStatus(`Repository remembered: ${h.name}.`,'good')}else aeRepoStatus(`Repository remembered: ${h.name}. Click Save, Open, or Reconnect to restore permission.`,'warn')}catch(e){aeRepoStatus(`Repository connection needs attention: ${e.message||e}`,'warn')}}
+async function aeRepoScan(directory,predicate,path=[],out=[],limit=2500){if(out.length>=limit)return out;for await(const [name,h] of directory.entries()){if(out.length>=limit)break;if(h.kind==='directory'){await aeRepoScan(h,predicate,[...path,name],out,limit)}else if(!predicate||predicate(name,h,path))out.push({name,handle:h,pathParts:[...path,name],directoryHandle:directory})}return out}
+async function aeRepoJson(entry){const f=await entry.handle.getFile(),t=(await f.text()).replace(/^\uFEFF/,'').trim();if(!t)throw new Error(`${entry.name} is empty.`);return JSON.parse(t)}
+function aeRepoPath(parts){return parts.join(' / ')}
+function aeSyncModalLock(){const repo=document.getElementById('aeRepoBrowser'),legacy=document.getElementById('aeLegacyModal');document.body.classList.toggle('ae-modal-open',!!((repo&&!repo.hidden)||(legacy&&!legacy.hidden)))}
+function aeRepoCloseBrowser(){document.getElementById('aeRepoBrowser').hidden=true;aeRepoBrowserCallback=null;aeRepoBrowserRecords=[];aeRepoBrowserFiltered=[];aeSyncModalLock()}
+function aeRepoRenderBrowser(){const list=document.getElementById('aeRepoBrowserList'),term=aeRepoClean(document.getElementById('aeRepoBrowserSearch')?.value).toLowerCase();aeRepoBrowserFiltered=aeRepoBrowserRecords.filter(r=>!term||`${r.title} ${r.meta} ${r.search||''}`.toLowerCase().includes(term));document.getElementById('aeRepoBrowserSummary').textContent=`${aeRepoBrowserFiltered.length} of ${aeRepoBrowserRecords.length} repository record${aeRepoBrowserRecords.length===1?'':'s'} shown.`;list.innerHTML='';if(!aeRepoBrowserFiltered.length){list.innerHTML='<div class="ae-repo-browser-empty">No repository records match this search.</div>';return}aeRepoBrowserFiltered.forEach((r,i)=>{const label=document.createElement('label');label.className='ae-repo-record';if(aeRepoBrowserMulti){const cb=document.createElement('input');cb.type='checkbox';cb.checked=r.selected!==false;cb.addEventListener('change',()=>r.selected=cb.checked);label.appendChild(cb)}else{const icon=document.createElement('span');icon.textContent='▸';icon.style.color='#c4b5fd';icon.style.fontWeight='900';label.appendChild(icon);label.tabIndex=0;const open=async()=>{try{aeRepoCloseBrowser();await aeRepoBrowserCallback?.([r])}catch(e){alert(e.message||e)}};label.addEventListener('click',open);label.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}})}const text=document.createElement('div');text.innerHTML=`<div class="ae-repo-record-title"></div><div class="ae-repo-record-meta"></div>`;text.querySelector('.ae-repo-record-title').textContent=r.title;text.querySelector('.ae-repo-record-meta').textContent=r.meta;label.appendChild(text);list.appendChild(label)})}
+function aeRepoShowBrowser(records,{title='Study Repository',multi=false,buttonLabel='Load Selected',onOpen}={}){aeRepoBrowserRecords=records;aeRepoBrowserMulti=!!multi;aeRepoBrowserCallback=onOpen||null;document.getElementById('aeRepoBrowserTitle').textContent=title;const search=document.getElementById('aeRepoBrowserSearch');search.value='';const footer=document.getElementById('aeRepoBrowserFooter');footer.hidden=!multi;document.getElementById('aeRepoBrowserOpenSelected').textContent=buttonLabel;document.getElementById('aeRepoBrowser').hidden=false;aeRepoRenderBrowser();aeSyncModalLock();setTimeout(()=>search.focus(),0)}
+document.getElementById('aeRepoBrowserClose')?.addEventListener('click',aeRepoCloseBrowser);document.getElementById('aeRepoBrowserCancel')?.addEventListener('click',aeRepoCloseBrowser);document.getElementById('aeRepoBrowser')?.addEventListener('click',e=>{if(e.target.id==='aeRepoBrowser')aeRepoCloseBrowser()});document.getElementById('aeRepoBrowserSearch')?.addEventListener('input',aeRepoRenderBrowser);document.getElementById('aeRepoBrowserOpenSelected')?.addEventListener('click',async()=>{const selected=aeRepoBrowserRecords.filter(r=>r.selected!==false);if(!selected.length)return alert('Select at least one repository record.');const cb=aeRepoBrowserCallback;aeRepoCloseBrowser();try{await cb?.(selected)}catch(e){alert(e.message||e)}});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElementById('aeRepoBrowser')?.hidden)aeRepoCloseBrowser()});
+
+const AE_REPO_SOURCE_ROUTE='02_DOWNTIME',AE_REPO_ROUTE='04_MULTI_STUDY_DOWNTIME';
+function aeMultiId(){if(state.repositoryAnalysisId)return state.repositoryAnalysisId;const d=aeRepoDateParts(new Date().toISOString());state.repositoryAnalysisId=`MDA-${d.compact}-${aeRepoRandom4()}`;return state.repositoryAnalysisId}
+function aeMultiFolderParts(){const d=aeRepoDateParts(new Date().toISOString()),locs=[...new Set(state.studies.map(x=>x.location).filter(Boolean))],lines=[...new Set(state.studies.map(x=>x.line).filter(Boolean))];return[AE_REPO_ROUTE,aeRepoToken(locs.length===1?locs[0]:'MULTI_LOCATION','MULTI_LOCATION'),aeRepoToken(lines.length===1?lines[0]:'MULTI_LINE','MULTI_LINE'),d.year,d.month,aeMultiId()]}
+function aeMultiExcelHtml(){const sheets=tableRowsForExcel();return `<html><head><meta charset="UTF-8"><style>body{font-family:Segoe UI,Arial,sans-serif}table{border-collapse:collapse;margin-bottom:24px;width:100%}caption{font-weight:bold;font-size:16px;margin:8px 0;text-align:left}th,td{border:1px solid #999;padding:6px;mso-number-format:'\@'}th{background:#111;color:#fff}</style></head><body>${rowsToHtmlTable('Summary',sheets.summary)}${rowsToHtmlTable('Pareto Breakdown',sheets.pareto)}${rowsToHtmlTable('Study Reference',sheets.studyReference)}${rowsToHtmlTable('Data Calculation',sheets.dataCalculation)}${rowsToHtmlTable('Event Timing Records',sheets.eventTiming)}${rowsToHtmlTable('Source-Excluded Event Audit',sheets.sourceExcludedEvents)}${rowsToHtmlTable('Study Segment Timing',sheets.segmentTiming)}${rowsToHtmlTable('Tag Group Mapping',sheets.tagGroups)}</body></html>`}
+function aeMultiAnalysisPayload(id,parts){
+  cleanupTagGroups();
+  return{
+    schema:'AbelEngineering.MultiStudyDowntimeAnalysis',schemaVersion:2,app:'Abel Engineering Multi-Study Downtime Totalizer',generatedAt:new Date().toISOString(),
+    calculationContract:{version:2,studyTimeBasis:'source included study seconds',potentialProduction:'production speed × included study hours',estimatedLostProduction:'production speed × included downtime hours',estimatedAvailableProduction:'production speed × included uptime hours'},
+    repository:{recordId:id,route:AE_REPO_ROUTE,sourceRoute:AE_REPO_SOURCE_ROUTE,relativePath:aeRepoPath(parts)},
+    sourceFiles:state.studies.map(x=>x.fileName),
+    sourceStudies:state.studies.map(x=>({
+      fileName:x.fileName,
+      repositoryRecordId:x.repositoryRecordId||'',
+      repositoryRelativePath:x.repositoryRelativePath||'',
+      repositoryFilePath:x.repositoryFilePath||'',
+      location:x.location,date:x.date,shift:x.shift,line:x.line,product:x.product,observer:x.observer,
+      includedStudySeconds:x.observedSeconds,totalDowntimeSeconds:x.totalDowntimeSeconds,productionSpeed:x.productionSpeed
+    })),
+    settings:{excludedCodes:[...state.excludedCodes],selectedStudyId:state.selectedStudyId,selectedLocation:state.selectedLocation,selectedShift:state.selectedShift,studySortMode:state.studySortMode,tagGroups:state.tagGroups.map(g=>({id:g.id,name:g.name,viewMode:g.viewMode,codes:[...g.codes]}))},
+    summary:tableRowsForExcel().summary
+  }
+}
+async function aeMultiScanDowntime(root){
+  const base=await aeRepoEnsureDir(root,[AE_REPO_SOURCE_ROUTE],true),entries=await aeRepoScan(base,name=>/__STUDY\.json$/i.test(name)),records=[];
+  for(const e of entries){
+    try{
+      const p=await aeRepoJson(e);if(p?.fileType!=='MPG_Downtime_Tracker_Study')continue;
+      const i=p.studyInfo||{},recordId=p.repository?.recordId||e.pathParts.at(-2)||e.name;
+      const repositoryRelativePath=p.repository?.relativePath||[AE_REPO_SOURCE_ROUTE,...e.pathParts.slice(0,-1)].join(' / ');
+      const filePath=[AE_REPO_SOURCE_ROUTE,...e.pathParts].join(' / ');
+      records.push({entry:e,recordId,repositoryRelativePath,filePath,fileName:e.name,title:`${i.studyLocation||'Unspecified'} • ${i.studyLine||'Unspecified'}`,meta:[i.studyDate,i.studyShift,i.studyProduct,recordId].filter(Boolean).join(' • '),search:JSON.stringify({studyInfo:i,recordId,repositoryRelativePath}),selected:true,sortKey:String(i.studyDate||'')});
+    }catch(err){console.warn('Skipping unreadable downtime source',e.name,err)}
+  }
+  records.sort((a,b)=>b.sortKey.localeCompare(a.sortKey)||b.meta.localeCompare(a.meta));
+  return records
+}
+function aeSourceMetaMap(records){return new Map(records.map(r=>[String(r.entry?.name||r.fileName||'').toLowerCase(),{recordId:r.recordId||'',relativePath:r.repositoryRelativePath||'',filePath:r.filePath||''}]))}
+async function aeMultiLoadSources(){
+  const root=await aeRepoGetRoot({interactive:true});
+  aeRepoStatus('Scanning Downtime source studies…','warn');
+  const records=await aeMultiScanDowntime(root);
+  aeRepoStatus(`Found ${records.length} compatible Downtime stud${records.length===1?'y':'ies'}. Select the studies to totalize.`,'good');
+  aeRepoShowBrowser(records,{title:'Load Downtime Studies',multi:true,buttonLabel:'Load Selected Studies',onOpen:async rows=>{
+    const files=[];for(const r of rows)files.push(await r.entry.handle.getFile());
+    await handleFiles(files,aeSourceMetaMap(rows));
+    state.repositoryAnalysisId='';
+    aeRepoStatus(`Loaded ${files.length} Downtime stud${files.length===1?'y':'ies'} from 02_DOWNTIME.`,'good')
+  }})
+}
+async function aeMultiSave(){
+  if(!state.studies.length)throw new Error('Load at least one Downtime study before saving an analysis.');
+  const root=await aeRepoGetRoot({interactive:true,probe:true}),id=aeMultiId(),parts=aeMultiFolderParts(),dir=await aeRepoEnsureDir(root,parts,true),analysis=aeMultiAnalysisPayload(id,parts);
+  aeRepoStatus(`Saving and verifying ${id}…`,'warn');
+  const outputs=[],a=await aeRepoWriteJson(dir,`${id}__ANALYSIS.json`,analysis);outputs.push({name:`${id}__ANALYSIS.json`,size:a.size,sha256:a.sha256,role:'analysis_definition'});
+  const html=aeMultiExcelHtml(),x=await aeRepoWriteRaw(dir,`${id}__REPORT.xls`,html,'application/vnd.ms-excel');outputs.push({name:`${id}__REPORT.xls`,size:x.size,role:'excel_report'});
+  const manifest={fileType:'AbelEngineering.StudyPackageManifest',schemaVersion:1,recordType:'MULTI_STUDY_DOWNTIME',recordId:id,sourceFiles:analysis.sourceFiles,sourceStudies:analysis.sourceStudies.map(x=>({fileName:x.fileName,repositoryRecordId:x.repositoryRecordId,repositoryRelativePath:x.repositoryRelativePath})),savedAt:new Date().toISOString(),relativePath:aeRepoPath(parts),outputs};
+  await aeRepoWriteJson(dir,`${id}__MANIFEST.json`,manifest);
+  aeRepoStatus(`Saved & verified: ${aeRepoPath(parts)} • Analysis JSON + Excel report + manifest.`,'good')
+}
+function aeResolveSavedAnalysisSources(analysis,sources){
+  const refs=Array.isArray(analysis.sourceStudies)&&analysis.sourceStudies.length?analysis.sourceStudies:(analysis.sourceFiles||[]).map(fileName=>({fileName}));
+  const matches=[],missing=[],used=new Set();
+  const norm=v=>String(v||'').trim().toLowerCase().replace(/\\/g,'/');
+  for(const ref of refs){
+    let candidates=[];
+    if(ref.repositoryRecordId)candidates=sources.filter(r=>norm(r.recordId)===norm(ref.repositoryRecordId));
+    if(!candidates.length&&ref.repositoryRelativePath)candidates=sources.filter(r=>norm(r.repositoryRelativePath)===norm(ref.repositoryRelativePath));
+    if(!candidates.length&&ref.repositoryFilePath)candidates=sources.filter(r=>norm(r.filePath)===norm(ref.repositoryFilePath));
+    if(!candidates.length&&ref.fileName)candidates=sources.filter(r=>norm(r.entry?.name||r.fileName)===norm(ref.fileName));
+    const match=candidates.find(r=>!used.has(r.entry?.name+'|'+r.filePath));
+    if(match){matches.push(match);used.add(match.entry?.name+'|'+match.filePath)}else missing.push(ref.repositoryRecordId||ref.repositoryRelativePath||ref.fileName||'Unknown source')
+  }
+  return{matches,missing}
+}
+async function aeMultiApplyAnalysis(entry){
+  const root=await aeRepoGetRoot({interactive:true}),analysis=await aeRepoJson(entry);
+  if(analysis?.schema!=='AbelEngineering.MultiStudyDowntimeAnalysis')throw new Error('The selected file is not a saved Multi-Study Downtime analysis.');
+  const sources=await aeMultiScanDowntime(root),resolved=aeResolveSavedAnalysisSources(analysis,sources);
+  if(resolved.missing.length)throw new Error(`Saved analysis source recovery is incomplete. Missing from 02_DOWNTIME: ${resolved.missing.join(', ')}`);
+  clearData();
+  const files=[];for(const r of resolved.matches)files.push(await r.entry.handle.getFile());
+  await handleFiles(files,aeSourceMetaMap(resolved.matches));
+  const cfg=analysis.settings||{};
+  state.excludedCodes=new Set((cfg.excludedCodes||[]).map(normalizeCode));
+  state.tagGroups=(cfg.tagGroups||[]).map((g,i)=>({id:g.id||`grp_repo_${Date.now()}_${i}`,name:g.name||`Group ${i+1}`,viewMode:g.viewMode==='SEPARATE'?'SEPARATE':'COMBINED',codes:new Set((g.codes||[]).map(normalizeCode))}));
+  cleanupTagGroups();state.selectedStudyId=cfg.selectedStudyId||'ALL';state.selectedLocation=cfg.selectedLocation||'ALL';state.selectedShift=cfg.selectedShift||'ALL';state.studySortMode=cfg.studySortMode||'LOAD';state.repositoryAnalysisId=analysis.repository?.recordId||entry.pathParts.at(-2)||'';
+  recalculateAndRender();
+  aeRepoStatus(`Opened analysis ${state.repositoryAnalysisId} with ${files.length} repository source stud${files.length===1?'y':'ies'} restored.`,'good')
+}
+async function aeMultiOpenAnalysis(){
+  const root=await aeRepoGetRoot({interactive:true}),base=await aeRepoEnsureDir(root,[AE_REPO_ROUTE],true);
+  aeRepoStatus('Scanning saved Multi-Study analyses…','warn');
+  const entries=await aeRepoScan(base,name=>/__ANALYSIS\.json$/i.test(name)),records=[];
+  for(const e of entries){try{const p=await aeRepoJson(e);if(p?.schema!=='AbelEngineering.MultiStudyDowntimeAnalysis')continue;const id=p.repository?.recordId||e.pathParts.at(-2)||e.name;records.push({entry:e,title:`${id} • ${(p.sourceStudies?.length||p.sourceFiles?.length||0)} source studies`,meta:[p.generatedAt?.slice(0,10),...(p.sourceStudies||[]).slice(0,2).map(x=>`${x.location||''} ${x.line||''}`)].filter(Boolean).join(' • '),search:JSON.stringify(p.sourceStudies||p.sourceFiles||[])})}catch(err){console.warn('Skipping unreadable saved analysis',e.name,err)}}
+  records.sort((a,b)=>b.meta.localeCompare(a.meta));
+  aeRepoStatus(`Found ${records.length} saved analysis record${records.length===1?'':'s'}.`,'good');
+  aeRepoShowBrowser(records,{title:'Open Saved Multi-Study Downtime Analysis',onOpen:async rows=>aeMultiApplyAnalysis(rows[0].entry)})
+}
+document.getElementById('aeRepoConnect')?.addEventListener('click',()=>aeRepoConnect().catch(e=>{aeRepoStatus(e.message||String(e),'bad');alert(e.message||e)}));
+document.getElementById('aeRepoLoadSources')?.addEventListener('click',()=>aeMultiLoadSources().catch(e=>{aeRepoStatus(`Load failed: ${e.message||e}`,'bad');alert(e.message||e)}));
+document.getElementById('aeRepoSave')?.addEventListener('click',()=>aeMultiSave().catch(e=>{aeRepoStatus(`Save failed: ${e.message||e}`,'bad');alert(e.message||e)}));
+document.getElementById('aeRepoOpenAnalysis')?.addEventListener('click',()=>aeMultiOpenAnalysis().catch(e=>{aeRepoStatus(`Open failed: ${e.message||e}`,'bad');alert(e.message||e)}));
+aeRepoBootstrap();
+
+
+
+function aeLegacyOpen(){const m=document.getElementById('aeLegacyModal');if(m){m.hidden=false;aeSyncModalLock();setTimeout(()=>document.getElementById('aeLegacyChooseFiles')?.focus(),0)}}
+function aeLegacyClose(){const m=document.getElementById('aeLegacyModal');if(m)m.hidden=true;aeSyncModalLock()}
+document.getElementById('aeLegacyLoadBtn')?.addEventListener('click',aeLegacyOpen);
+document.getElementById('aeLegacyClose')?.addEventListener('click',aeLegacyClose);
+document.getElementById('aeLegacyModal')?.addEventListener('click',e=>{if(e.target.id==='aeLegacyModal')aeLegacyClose()});
+document.getElementById('aeLegacyChooseFiles')?.addEventListener('click',()=>document.getElementById('jsonInput')?.click());
+document.getElementById('aeLegacyChooseFolder')?.addEventListener('click',()=>document.getElementById('folderInput')?.click());
+document.getElementById('jsonInput')?.addEventListener('change',()=>aeLegacyClose());
+document.getElementById('folderInput')?.addEventListener('change',()=>aeLegacyClose());
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElementById('aeLegacyModal')?.hidden)aeLegacyClose()});
+
+</script>
 </body>
 </html>
