@@ -868,6 +868,17 @@
     .ae-repo-status.warn { border-color:rgba(245,158,11,.42); background:rgba(245,158,11,.08); color:#fde68a; }
     .ae-repo-status.bad { border-color:rgba(239,68,68,.42); background:rgba(239,68,68,.08); color:#fecaca; }
 
+    .ae-analysis-identity { margin-top:12px; padding:12px; border:1px solid rgba(196,181,253,.24); border-radius:14px; background:rgba(141,88,199,.055); }
+    .ae-analysis-identity-title { color:#f7f5fa; font-size:11px; font-weight:950; letter-spacing:.08em; text-transform:uppercase; text-align:center; margin-bottom:9px; }
+    .ae-analysis-identity-grid { display:grid; grid-template-columns:minmax(190px,1.1fr) minmax(150px,.7fr) minmax(150px,.65fr); gap:9px; align-items:end; }
+    .ae-analysis-identity-grid .full { grid-column:1/-1; }
+    .ae-analysis-identity label { display:block; color:#cfc6d8; font-size:10px; font-weight:900; letter-spacing:.055em; text-transform:uppercase; text-align:center; margin-bottom:5px; }
+    .ae-analysis-identity input,.ae-analysis-identity textarea { width:100%; min-height:42px; border-radius:11px; border:1px solid rgba(211,190,230,.19); background:#0c0a0e; color:#fff; padding:9px 10px; font:inherit; outline:none; }
+    .ae-analysis-identity input:focus,.ae-analysis-identity textarea:focus { border-color:#aa74df; box-shadow:0 0 0 3px rgba(170,116,223,.2); }
+    .ae-analysis-identity textarea { min-height:64px; resize:vertical; text-align:left; }
+    .ae-analysis-record { margin-top:8px; color:#aaa6b4; font-size:10px; line-height:1.4; text-align:center; }
+    .ae-analysis-record b { color:#ddd6fe; }
+
     .ae-source-state { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:9px; align-items:center; margin-top:10px; }
     .ae-source-state .status { margin:0; }
     .ae-source-state button { min-height:46px; white-space:nowrap; }
@@ -907,6 +918,8 @@
 
     @media(max-width:700px) {
       .ae-repo-actions { grid-template-columns:1fr !important; max-width:none; }
+      .ae-analysis-identity-grid { grid-template-columns:1fr; }
+      .ae-analysis-identity-grid .full { grid-column:auto; }
       .ae-source-state { grid-template-columns:1fr; }
       .ae-source-state button { width:100%; }
       .ae-repo-browser,.ae-legacy-modal { padding:0; align-items:stretch; }
@@ -948,6 +961,16 @@
         </div>
         <div class="ae-official-only-note">Study Repository is the normal source and the only analysis save destination. Legacy File Load never becomes a save destination.</div>
         <div class="ae-repo-route">Source: 02_DOWNTIME → Analysis: 04_MULTI_STUDY_DOWNTIME</div>
+        <div class="ae-analysis-identity">
+          <div class="ae-analysis-identity-title">Multi-Study Analysis Identity</div>
+          <div class="ae-analysis-identity-grid">
+            <div><label for="analysisName">Analysis Name / Identifier</label><input id="analysisName" type="text" placeholder="Example: Slitter downtime baseline — Q3 2026" /></div>
+            <div><label for="analysisOrganizer">Organizer</label><input id="analysisOrganizer" type="text" placeholder="Name / team / department" /></div>
+            <div><label for="analysisDate">Analysis Date</label><input id="analysisDate" type="date" /></div>
+            <div class="full"><label for="analysisDescription">Description</label><textarea id="analysisDescription" placeholder="What studies are grouped here, what question is being answered, or what comparison this analysis represents."></textarea></div>
+          </div>
+          <div id="analysisRecordDisplay" class="ae-analysis-record">Repository record: <b>New / not saved</b></div>
+        </div>
         <div class="ae-repo-actions">
           <button id="aeRepoLoadSources" class="ae-repo-open" type="button">LOAD DOWNTIME STUDIES</button>
           <button id="aeRepoSave" class="ae-repo-primary" type="button">SAVE ANALYSIS</button>
@@ -1231,7 +1254,7 @@
   \n<div id="aeRepoBrowser" class="ae-repo-browser" role="dialog" aria-modal="true" aria-labelledby="aeRepoBrowserTitle" hidden>
   <div class="ae-repo-browser-card">
     <div class="ae-repo-browser-head"><h3 id="aeRepoBrowserTitle">Study Repository</h3><button id="aeRepoBrowserClose" type="button" aria-label="Close">×</button></div>
-    <div class="ae-repo-browser-tools"><input id="aeRepoBrowserSearch" type="text" placeholder="Search plant, line, study, job, date, or ID" autocomplete="off"><div id="aeRepoBrowserSummary" class="ae-repo-browser-summary"></div></div>
+    <div class="ae-repo-browser-tools"><input id="aeRepoBrowserSearch" type="text" placeholder="Search analysis name, organizer, description, date, line, or ID" autocomplete="off"><div id="aeRepoBrowserSummary" class="ae-repo-browser-summary"></div></div>
     <div id="aeRepoBrowserList" class="ae-repo-browser-list"></div>
     <div id="aeRepoBrowserFooter" class="ae-repo-browser-footer" hidden><button id="aeRepoBrowserCancel" type="button">Cancel</button><button id="aeRepoBrowserOpenSelected" class="ae-repo-primary" type="button">Load Selected</button></div>
   </div>
@@ -1261,7 +1284,8 @@
       studySortMode: 'LOAD',
       tagGroups: [],
       draggedTagCode: '',
-      repositoryAnalysisId: ''
+      repositoryAnalysisId: '',
+      analysisCreatedAt: ''
     };
 
     const els = {
@@ -1676,26 +1700,30 @@
       await handleFiles(files);
     }
 
-    async function handleFiles(fileList, repositoryMetaByName = null) {
+    async function handleFiles(fileList, repositoryMetaLookup = null) {
       const files = Array.from(fileList || []);
-      if (!files.length) return;
+      if (!files.length) return { requested: 0, accepted: 0, loaded: 0, failed: 0, rejected: [], failures: [] };
 
       const rejected = files.filter(file => !validateJsonFile(file));
       const jsonFiles = files.filter(validateJsonFile);
       let loaded = 0;
       let failed = 0;
+      const failures = [];
 
       for (const file of jsonFiles) {
         try {
           const fileText = await readFileAsText(file);
           const data = JSON.parse(fileText);
           if (!Array.isArray(data.events)) throw new Error('Missing events array');
-          const repositoryMeta = repositoryMetaByName instanceof Map ? repositoryMetaByName.get(file.name.toLowerCase()) || null : null;
+          const repositoryMeta = repositoryMetaLookup instanceof Map
+            ? repositoryMetaLookup.get(file) || repositoryMetaLookup.get(file.name.toLowerCase()) || null
+            : null;
           addStudy(file.name, data, repositoryMeta);
           loaded += 1;
         } catch (err) {
           console.error(err);
           failed += 1;
+          failures.push({ fileName: file.name, message: err?.message || String(err) });
         }
       }
 
@@ -1712,6 +1740,14 @@
       if (els.jsonInputSecondary) els.jsonInputSecondary.value = '';
       if (els.folderInput) els.folderInput.value = '';
       if (els.folderInputSecondary) els.folderInputSecondary.value = '';
+      return {
+        requested: files.length,
+        accepted: jsonFiles.length,
+        loaded,
+        failed,
+        rejected: rejected.map(file => file.name),
+        failures
+      };
     }
 
     function addStudy(fileName, data, repositoryMeta = null) {
@@ -2238,8 +2274,11 @@
     }
 
     function recalculateAndRender() {
-      recalculatePareto();
+      // Normalize restored filters/selections before calculating the Pareto.
+      // Older saved analyses can contain a session-only study ID that is no
+      // longer valid after their source files are reopened.
       renderStudySlicer();
+      recalculatePareto();
       renderTagFilter();
       renderTagGroups();
       renderMetrics();
@@ -2624,7 +2663,11 @@
       const generatedAt = new Date().toLocaleString(undefined, {
         year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit'
       });
+      const analysisInfo = aeAnalysisInfoFromUi();
       const filters = [
+        analysisInfo.analysisName ? `Analysis: ${analysisInfo.analysisName}` : '',
+        analysisInfo.organizer ? `Organizer: ${analysisInfo.organizer}` : '',
+        analysisInfo.analysisDate ? `Analysis date: ${analysisInfo.analysisDate}` : '',
         `Source: ${getViewLabel()}`,
         `Location: ${state.selectedLocation === 'ALL' ? 'All locations' : state.selectedLocation}`,
         `Shift: ${state.selectedShift === 'ALL' ? 'All shifts' : state.selectedShift}`,
@@ -2633,7 +2676,7 @@
         `Events: ${totals.totalEvents.toLocaleString()}`,
         `Generated: ${generatedAt}`
       ];
-      els.paretoPrintMeta.textContent = filters.join(' • ');
+      els.paretoPrintMeta.textContent = filters.filter(Boolean).join(' • ');
     }
 
     function renderCalculationTable() {
@@ -2797,14 +2840,22 @@
       state.tagGroups = [];
       state.draggedTagCode = '';
       state.repositoryAnalysisId = '';
+      state.analysisCreatedAt = '';
+      aeRenderAnalysisRecord();
       recalculateAndRender();
       setStatus('Loaded data cleared. Use Load Downtime Studies or Legacy File Load to begin.', 'warn');
     }
 
     function tableRowsForExcel() {
       const totals = getTotals();
+      const analysisInfo = aeAnalysisInfoFromUi();
       const summary = [
         ['Abel Engineering Multi-Study Downtime Totalizer'],
+        ['Analysis Name', analysisInfo.analysisName || ''],
+        ['Organizer', analysisInfo.organizer || ''],
+        ['Analysis Date', analysisInfo.analysisDate || ''],
+        ['Description', analysisInfo.description || ''],
+        ['Repository Record ID', state.repositoryAnalysisId || ''],
         ['Pareto Source', getViewLabel()],
         ['Studies Loaded', state.studies.length],
         ['Studies in Current Pareto View', getVisibleStudies().length],
@@ -3250,18 +3301,45 @@ async function aeRepoJson(entry){const f=await entry.handle.getFile(),t=(await f
 function aeRepoPath(parts){return parts.join(' / ')}
 function aeSyncModalLock(){const repo=document.getElementById('aeRepoBrowser'),legacy=document.getElementById('aeLegacyModal');document.body.classList.toggle('ae-modal-open',!!((repo&&!repo.hidden)||(legacy&&!legacy.hidden)))}
 function aeRepoCloseBrowser(){document.getElementById('aeRepoBrowser').hidden=true;aeRepoBrowserCallback=null;aeRepoBrowserRecords=[];aeRepoBrowserFiltered=[];aeSyncModalLock()}
-function aeRepoRenderBrowser(){const list=document.getElementById('aeRepoBrowserList'),term=aeRepoClean(document.getElementById('aeRepoBrowserSearch')?.value).toLowerCase();aeRepoBrowserFiltered=aeRepoBrowserRecords.filter(r=>!term||`${r.title} ${r.meta} ${r.search||''}`.toLowerCase().includes(term));document.getElementById('aeRepoBrowserSummary').textContent=`${aeRepoBrowserFiltered.length} of ${aeRepoBrowserRecords.length} repository record${aeRepoBrowserRecords.length===1?'':'s'} shown.`;list.innerHTML='';if(!aeRepoBrowserFiltered.length){list.innerHTML='<div class="ae-repo-browser-empty">No repository records match this search.</div>';return}aeRepoBrowserFiltered.forEach((r,i)=>{const label=document.createElement('label');label.className='ae-repo-record';if(aeRepoBrowserMulti){const cb=document.createElement('input');cb.type='checkbox';cb.checked=r.selected!==false;cb.addEventListener('change',()=>r.selected=cb.checked);label.appendChild(cb)}else{const icon=document.createElement('span');icon.textContent='▸';icon.style.color='#c4b5fd';icon.style.fontWeight='900';label.appendChild(icon);label.tabIndex=0;const open=async()=>{try{aeRepoCloseBrowser();await aeRepoBrowserCallback?.([r])}catch(e){alert(e.message||e)}};label.addEventListener('click',open);label.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}})}const text=document.createElement('div');text.innerHTML=`<div class="ae-repo-record-title"></div><div class="ae-repo-record-meta"></div>`;text.querySelector('.ae-repo-record-title').textContent=r.title;text.querySelector('.ae-repo-record-meta').textContent=r.meta;label.appendChild(text);list.appendChild(label)})}
+function aeRepoRenderBrowser(){const list=document.getElementById('aeRepoBrowserList'),term=aeRepoClean(document.getElementById('aeRepoBrowserSearch')?.value).toLowerCase();aeRepoBrowserFiltered=aeRepoBrowserRecords.filter(r=>!term||`${r.title} ${r.meta} ${r.search||''}`.toLowerCase().includes(term));document.getElementById('aeRepoBrowserSummary').textContent=`${aeRepoBrowserFiltered.length} of ${aeRepoBrowserRecords.length} repository record${aeRepoBrowserRecords.length===1?'':'s'} shown.`;list.innerHTML='';if(!aeRepoBrowserFiltered.length){list.innerHTML='<div class="ae-repo-browser-empty">No repository records match this search.</div>';return}aeRepoBrowserFiltered.forEach((r,i)=>{const label=document.createElement('label');label.className='ae-repo-record';if(aeRepoBrowserMulti){const cb=document.createElement('input');cb.type='checkbox';cb.checked=r.selected!==false;cb.addEventListener('change',()=>r.selected=cb.checked);label.appendChild(cb)}else{const icon=document.createElement('span');icon.textContent='▸';icon.style.color='#c4b5fd';icon.style.fontWeight='900';label.appendChild(icon);label.tabIndex=0;const open=async()=>{const cb=aeRepoBrowserCallback;try{aeRepoCloseBrowser();await cb?.([r])}catch(e){console.error('Open repository record failed.',e);aeRepoStatus(`Open failed: ${e.message||e}`,'bad');alert(e.message||e)}};label.addEventListener('click',open);label.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}})}const text=document.createElement('div');text.innerHTML=`<div class="ae-repo-record-title"></div><div class="ae-repo-record-meta"></div>`;text.querySelector('.ae-repo-record-title').textContent=r.title;text.querySelector('.ae-repo-record-meta').textContent=r.meta;label.appendChild(text);list.appendChild(label)})}
 function aeRepoShowBrowser(records,{title='Study Repository',multi=false,buttonLabel='Load Selected',onOpen}={}){aeRepoBrowserRecords=records;aeRepoBrowserMulti=!!multi;aeRepoBrowserCallback=onOpen||null;document.getElementById('aeRepoBrowserTitle').textContent=title;const search=document.getElementById('aeRepoBrowserSearch');search.value='';const footer=document.getElementById('aeRepoBrowserFooter');footer.hidden=!multi;document.getElementById('aeRepoBrowserOpenSelected').textContent=buttonLabel;document.getElementById('aeRepoBrowser').hidden=false;aeRepoRenderBrowser();aeSyncModalLock();setTimeout(()=>search.focus(),0)}
-document.getElementById('aeRepoBrowserClose')?.addEventListener('click',aeRepoCloseBrowser);document.getElementById('aeRepoBrowserCancel')?.addEventListener('click',aeRepoCloseBrowser);document.getElementById('aeRepoBrowser')?.addEventListener('click',e=>{if(e.target.id==='aeRepoBrowser')aeRepoCloseBrowser()});document.getElementById('aeRepoBrowserSearch')?.addEventListener('input',aeRepoRenderBrowser);document.getElementById('aeRepoBrowserOpenSelected')?.addEventListener('click',async()=>{const selected=aeRepoBrowserRecords.filter(r=>r.selected!==false);if(!selected.length)return alert('Select at least one repository record.');const cb=aeRepoBrowserCallback;aeRepoCloseBrowser();try{await cb?.(selected)}catch(e){alert(e.message||e)}});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElementById('aeRepoBrowser')?.hidden)aeRepoCloseBrowser()});
+document.getElementById('aeRepoBrowserClose')?.addEventListener('click',aeRepoCloseBrowser);document.getElementById('aeRepoBrowserCancel')?.addEventListener('click',aeRepoCloseBrowser);document.getElementById('aeRepoBrowser')?.addEventListener('click',e=>{if(e.target.id==='aeRepoBrowser')aeRepoCloseBrowser()});document.getElementById('aeRepoBrowserSearch')?.addEventListener('input',aeRepoRenderBrowser);document.getElementById('aeRepoBrowserOpenSelected')?.addEventListener('click',async()=>{const selected=aeRepoBrowserRecords.filter(r=>r.selected!==false);if(!selected.length)return alert('Select at least one repository record.');const cb=aeRepoBrowserCallback;aeRepoCloseBrowser();try{await cb?.(selected)}catch(e){console.error('Load repository records failed.',e);aeRepoStatus(`Load failed: ${e.message||e}`,'bad');alert(e.message||e)}});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElementById('aeRepoBrowser')?.hidden)aeRepoCloseBrowser()});
 
 const AE_REPO_SOURCE_ROUTE='02_DOWNTIME',AE_REPO_ROUTE='04_MULTI_STUDY_DOWNTIME';
-function aeMultiId(){if(state.repositoryAnalysisId)return state.repositoryAnalysisId;const d=aeRepoDateParts(new Date().toISOString());state.repositoryAnalysisId=`MDA-${d.compact}-${aeRepoRandom4()}`;return state.repositoryAnalysisId}
-function aeMultiFolderParts(){const d=aeRepoDateParts(new Date().toISOString()),locs=[...new Set(state.studies.map(x=>x.location).filter(Boolean))],lines=[...new Set(state.studies.map(x=>x.line).filter(Boolean))];return[AE_REPO_ROUTE,aeRepoToken(locs.length===1?locs[0]:'MULTI_LOCATION','MULTI_LOCATION'),aeRepoToken(lines.length===1?lines[0]:'MULTI_LINE','MULTI_LINE'),d.year,d.month,aeMultiId()]}
+function aeLocalIsoDate(date=new Date()){const y=date.getFullYear(),m=String(date.getMonth()+1).padStart(2,'0'),d=String(date.getDate()).padStart(2,'0');return `${y}-${m}-${d}`}
+function aeAnalysisInfoFromUi(){return{analysisName:String(document.getElementById('analysisName')?.value||'').trim(),organizer:String(document.getElementById('analysisOrganizer')?.value||'').trim(),analysisDate:String(document.getElementById('analysisDate')?.value||'').trim()||aeLocalIsoDate(),description:String(document.getElementById('analysisDescription')?.value||'').trim()}}
+function aeApplyAnalysisInfo(info={}){const date=String(info.analysisDate||info.date||'').trim()||aeLocalIsoDate();if(document.getElementById('analysisName'))document.getElementById('analysisName').value=String(info.analysisName||info.name||'');if(document.getElementById('analysisOrganizer'))document.getElementById('analysisOrganizer').value=String(info.organizer||'');if(document.getElementById('analysisDate'))document.getElementById('analysisDate').value=date;if(document.getElementById('analysisDescription'))document.getElementById('analysisDescription').value=String(info.description||'');aeRenderAnalysisRecord()}
+function aeRenderAnalysisRecord(){const el=document.getElementById('analysisRecordDisplay');if(el)el.innerHTML=`Repository record: <b>${aeRepoClean(state.repositoryAnalysisId)||'New / not saved'}</b>`}
+function aeInitializeAnalysisIdentity(){const date=document.getElementById('analysisDate');if(date&&!date.value)date.value=aeLocalIsoDate();aeRenderAnalysisRecord()}
+function aeMultiId(){if(state.repositoryAnalysisId)return state.repositoryAnalysisId;const info=aeAnalysisInfoFromUi(),d=aeRepoDateParts(info.analysisDate||new Date().toISOString());state.repositoryAnalysisId=`MDA-${d.compact}-${aeRepoRandom4()}`;aeRenderAnalysisRecord();return state.repositoryAnalysisId}
+function aeMultiFolderParts(){const info=aeAnalysisInfoFromUi(),d=aeRepoDateParts(info.analysisDate||new Date().toISOString()),locs=[...new Set(state.studies.map(x=>x.location).filter(Boolean))],lines=[...new Set(state.studies.map(x=>x.line).filter(Boolean))];return[AE_REPO_ROUTE,aeRepoToken(locs.length===1?locs[0]:'MULTI_LOCATION','MULTI_LOCATION'),aeRepoToken(lines.length===1?lines[0]:'MULTI_LINE','MULTI_LINE'),d.year,d.month,aeMultiId()]}
 function aeMultiExcelHtml(){const sheets=tableRowsForExcel();return `<html><head><meta charset="UTF-8"><style>body{font-family:Segoe UI,Arial,sans-serif}table{border-collapse:collapse;margin-bottom:24px;width:100%}caption{font-weight:bold;font-size:16px;margin:8px 0;text-align:left}th,td{border:1px solid #999;padding:6px;mso-number-format:'\@'}th{background:#111;color:#fff}</style></head><body>${rowsToHtmlTable('Summary',sheets.summary)}${rowsToHtmlTable('Pareto Breakdown',sheets.pareto)}${rowsToHtmlTable('Study Reference',sheets.studyReference)}${rowsToHtmlTable('Data Calculation',sheets.dataCalculation)}${rowsToHtmlTable('Event Timing Records',sheets.eventTiming)}${rowsToHtmlTable('Source-Excluded Event Audit',sheets.sourceExcludedEvents)}${rowsToHtmlTable('Study Segment Timing',sheets.segmentTiming)}${rowsToHtmlTable('Tag Group Mapping',sheets.tagGroups)}</body></html>`}
+function aeStudySelectionRef(study){
+  if(!study)return null;
+  return{
+    repositoryRecordId:study.repositoryRecordId||'',
+    repositoryRelativePath:study.repositoryRelativePath||'',
+    repositoryFilePath:study.repositoryFilePath||'',
+    fileName:study.fileName||''
+  }
+}
+function aeSelectedStudyRef(){return state.selectedStudyId==='ALL'?null:aeStudySelectionRef(state.studies.find(study=>study.id===state.selectedStudyId))}
+function aeFindStudyBySavedRef(ref){
+  if(!ref||typeof ref!=='object')return null;
+  const norm=value=>String(value||'').trim().toLowerCase().replace(/\\/g,'/');
+  const tests=[
+    ['repositoryRecordId',ref.repositoryRecordId],
+    ['repositoryFilePath',ref.repositoryFilePath],
+    ['repositoryRelativePath',ref.repositoryRelativePath]
+  ];
+  for(const [field,value] of tests){if(value){const match=state.studies.find(study=>norm(study[field])===norm(value));if(match)return match}}
+  return ref.fileName?state.studies.find(study=>norm(study.fileName)===norm(ref.fileName))||null:null
+}
 function aeMultiAnalysisPayload(id,parts){
   cleanupTagGroups();
   return{
-    schema:'AbelEngineering.MultiStudyDowntimeAnalysis',schemaVersion:2,app:'Abel Engineering Multi-Study Downtime Totalizer',generatedAt:new Date().toISOString(),
+    schema:'AbelEngineering.MultiStudyDowntimeAnalysis',schemaVersion:4,app:'Abel Engineering Multi-Study Downtime Totalizer',generatedAt:new Date().toISOString(),
+    analysisInfo:{...aeAnalysisInfoFromUi(),createdAt:state.analysisCreatedAt||new Date().toISOString(),updatedAt:new Date().toISOString()},
     calculationContract:{version:2,studyTimeBasis:'source included study seconds',potentialProduction:'production speed × included study hours',estimatedLostProduction:'production speed × included downtime hours',estimatedAvailableProduction:'production speed × included uptime hours'},
     repository:{recordId:id,route:AE_REPO_ROUTE,sourceRoute:AE_REPO_SOURCE_ROUTE,relativePath:aeRepoPath(parts)},
     sourceFiles:state.studies.map(x=>x.fileName),
@@ -3273,7 +3351,7 @@ function aeMultiAnalysisPayload(id,parts){
       location:x.location,date:x.date,shift:x.shift,line:x.line,product:x.product,observer:x.observer,
       includedStudySeconds:x.observedSeconds,totalDowntimeSeconds:x.totalDowntimeSeconds,productionSpeed:x.productionSpeed
     })),
-    settings:{excludedCodes:[...state.excludedCodes],selectedStudyId:state.selectedStudyId,selectedLocation:state.selectedLocation,selectedShift:state.selectedShift,studySortMode:state.studySortMode,tagGroups:state.tagGroups.map(g=>({id:g.id,name:g.name,viewMode:g.viewMode,codes:[...g.codes]}))},
+    settings:{excludedCodes:[...state.excludedCodes],selectedStudyId:'ALL',selectedStudyRef:aeSelectedStudyRef(),selectedLocation:state.selectedLocation,selectedShift:state.selectedShift,studySortMode:state.studySortMode,tagGroups:state.tagGroups.map(g=>({id:g.id,name:g.name,viewMode:g.viewMode,codes:[...g.codes]}))},
     summary:tableRowsForExcel().summary
   }
 }
@@ -3291,7 +3369,17 @@ async function aeMultiScanDowntime(root){
   records.sort((a,b)=>b.sortKey.localeCompare(a.sortKey)||b.meta.localeCompare(a.meta));
   return records
 }
-function aeSourceMetaMap(records){return new Map(records.map(r=>[String(r.entry?.name||r.fileName||'').toLowerCase(),{recordId:r.recordId||'',relativePath:r.repositoryRelativePath||'',filePath:r.filePath||''}]))}
+function aeSourceMetaMap(records,files=[]){
+  const map=new Map(),nameCounts=new Map();
+  records.forEach(r=>{const key=String(r.entry?.name||r.fileName||'').toLowerCase();nameCounts.set(key,(nameCounts.get(key)||0)+1)});
+  records.forEach((r,index)=>{
+    const meta={recordId:r.recordId||'',relativePath:r.repositoryRelativePath||'',filePath:r.filePath||''};
+    if(files[index])map.set(files[index],meta);
+    const key=String(r.entry?.name||r.fileName||'').toLowerCase();
+    if(key&&nameCounts.get(key)===1)map.set(key,meta)
+  });
+  return map
+}
 async function aeMultiLoadSources(){
   const root=await aeRepoGetRoot({interactive:true});
   aeRepoStatus('Scanning Downtime source studies…','warn');
@@ -3299,18 +3387,22 @@ async function aeMultiLoadSources(){
   aeRepoStatus(`Found ${records.length} compatible Downtime stud${records.length===1?'y':'ies'}. Select the studies to totalize.`,'good');
   aeRepoShowBrowser(records,{title:'Load Downtime Studies',multi:true,buttonLabel:'Load Selected Studies',onOpen:async rows=>{
     const files=[];for(const r of rows)files.push(await r.entry.handle.getFile());
-    await handleFiles(files,aeSourceMetaMap(rows));
-    state.repositoryAnalysisId='';
-    aeRepoStatus(`Loaded ${files.length} Downtime stud${files.length===1?'y':'ies'} from 02_DOWNTIME.`,'good')
+    const result=await handleFiles(files,aeSourceMetaMap(rows,files));
+    if(!result.loaded)throw new Error('The selected repository files were found, but none could be parsed as Downtime studies.');
+    state.repositoryAnalysisId='';state.analysisCreatedAt='';aeRenderAnalysisRecord();
+    const failedNote=result.failed?` ${result.failed} selected file${result.failed===1?'':'s'} could not be parsed.`:'';
+    aeRepoStatus(`Loaded ${result.loaded} Downtime stud${result.loaded===1?'y':'ies'} from 02_DOWNTIME.${failedNote}`,result.failed?'warn':'good')
   }})
 }
 async function aeMultiSave(){
   if(!state.studies.length)throw new Error('Load at least one Downtime study before saving an analysis.');
+  const info=aeAnalysisInfoFromUi();if(!info.analysisName)throw new Error('Enter an Analysis Name / Identifier before saving so this Totalizer can be found again by a human-readable name.');
+  if(!state.analysisCreatedAt)state.analysisCreatedAt=new Date().toISOString();
   const root=await aeRepoGetRoot({interactive:true,probe:true}),id=aeMultiId(),parts=aeMultiFolderParts(),dir=await aeRepoEnsureDir(root,parts,true),analysis=aeMultiAnalysisPayload(id,parts);
   aeRepoStatus(`Saving and verifying ${id}…`,'warn');
   const outputs=[],a=await aeRepoWriteJson(dir,`${id}__ANALYSIS.json`,analysis);outputs.push({name:`${id}__ANALYSIS.json`,size:a.size,sha256:a.sha256,role:'analysis_definition'});
   const html=aeMultiExcelHtml(),x=await aeRepoWriteRaw(dir,`${id}__REPORT.xls`,html,'application/vnd.ms-excel');outputs.push({name:`${id}__REPORT.xls`,size:x.size,role:'excel_report'});
-  const manifest={fileType:'AbelEngineering.StudyPackageManifest',schemaVersion:1,recordType:'MULTI_STUDY_DOWNTIME',recordId:id,sourceFiles:analysis.sourceFiles,sourceStudies:analysis.sourceStudies.map(x=>({fileName:x.fileName,repositoryRecordId:x.repositoryRecordId,repositoryRelativePath:x.repositoryRelativePath})),savedAt:new Date().toISOString(),relativePath:aeRepoPath(parts),outputs};
+  const manifest={fileType:'AbelEngineering.StudyPackageManifest',schemaVersion:2,recordType:'MULTI_STUDY_DOWNTIME',recordId:id,analysisName:analysis.analysisInfo?.analysisName||'',organizer:analysis.analysisInfo?.organizer||'',analysisDate:analysis.analysisInfo?.analysisDate||'',description:analysis.analysisInfo?.description||'',sourceFiles:analysis.sourceFiles,sourceStudies:analysis.sourceStudies.map(x=>({fileName:x.fileName,repositoryRecordId:x.repositoryRecordId,repositoryRelativePath:x.repositoryRelativePath})),savedAt:new Date().toISOString(),relativePath:aeRepoPath(parts),outputs};
   await aeRepoWriteJson(dir,`${id}__MANIFEST.json`,manifest);
   aeRepoStatus(`Saved & verified: ${aeRepoPath(parts)} • Analysis JSON + Excel report + manifest.`,'good')
 }
@@ -3319,12 +3411,12 @@ function aeResolveSavedAnalysisSources(analysis,sources){
   const matches=[],missing=[],used=new Set();
   const norm=v=>String(v||'').trim().toLowerCase().replace(/\\/g,'/');
   for(const ref of refs){
-    let candidates=[];
-    if(ref.repositoryRecordId)candidates=sources.filter(r=>norm(r.recordId)===norm(ref.repositoryRecordId));
-    if(!candidates.length&&ref.repositoryRelativePath)candidates=sources.filter(r=>norm(r.repositoryRelativePath)===norm(ref.repositoryRelativePath));
-    if(!candidates.length&&ref.repositoryFilePath)candidates=sources.filter(r=>norm(r.filePath)===norm(ref.repositoryFilePath));
-    if(!candidates.length&&ref.fileName)candidates=sources.filter(r=>norm(r.entry?.name||r.fileName)===norm(ref.fileName));
-    const match=candidates.find(r=>!used.has(r.entry?.name+'|'+r.filePath));
+    let match=null;
+    const findUnused=predicate=>sources.find(r=>predicate(r)&&!used.has(r.entry?.name+'|'+r.filePath));
+    if(ref.repositoryRecordId)match=findUnused(r=>norm(r.recordId)===norm(ref.repositoryRecordId));
+    if(!match&&ref.repositoryFilePath)match=findUnused(r=>norm(r.filePath)===norm(ref.repositoryFilePath));
+    if(!match&&ref.repositoryRelativePath)match=findUnused(r=>norm(r.repositoryRelativePath)===norm(ref.repositoryRelativePath));
+    if(!match&&ref.fileName)match=findUnused(r=>norm(r.entry?.name||r.fileName)===norm(ref.fileName));
     if(match){matches.push(match);used.add(match.entry?.name+'|'+match.filePath)}else missing.push(ref.repositoryRecordId||ref.repositoryRelativePath||ref.fileName||'Unknown source')
   }
   return{matches,missing}
@@ -3332,31 +3424,39 @@ function aeResolveSavedAnalysisSources(analysis,sources){
 async function aeMultiApplyAnalysis(entry){
   const root=await aeRepoGetRoot({interactive:true}),analysis=await aeRepoJson(entry);
   if(analysis?.schema!=='AbelEngineering.MultiStudyDowntimeAnalysis')throw new Error('The selected file is not a saved Multi-Study Downtime analysis.');
+  aeRepoStatus('Restoring the selected analysis and resolving its source studies…','warn');
   const sources=await aeMultiScanDowntime(root),resolved=aeResolveSavedAnalysisSources(analysis,sources);
-  if(resolved.missing.length)throw new Error(`Saved analysis source recovery is incomplete. Missing from 02_DOWNTIME: ${resolved.missing.join(', ')}`);
+  if(!resolved.matches.length){
+    if(resolved.missing.length)throw new Error(`None of this analysis's source studies could be resolved from 02_DOWNTIME. Missing: ${resolved.missing.join(', ')}`);
+    throw new Error('The selected analysis does not contain any source-study references.');
+  }
   clearData();
   const files=[];for(const r of resolved.matches)files.push(await r.entry.handle.getFile());
-  await handleFiles(files,aeSourceMetaMap(resolved.matches));
+  const loadResult=files.length?await handleFiles(files,aeSourceMetaMap(resolved.matches,files)):{loaded:0,failed:0,failures:[]};
+  if(!loadResult.loaded){clearData();throw new Error(`The source studies were found, but none could be loaded.${loadResult.failures?.length?` ${loadResult.failures.map(item=>`${item.fileName}: ${item.message}`).join('; ')}`:''}`)}
   const cfg=analysis.settings||{};
   state.excludedCodes=new Set((cfg.excludedCodes||[]).map(normalizeCode));
   state.tagGroups=(cfg.tagGroups||[]).map((g,i)=>({id:g.id||`grp_repo_${Date.now()}_${i}`,name:g.name||`Group ${i+1}`,viewMode:g.viewMode==='SEPARATE'?'SEPARATE':'COMBINED',codes:new Set((g.codes||[]).map(normalizeCode))}));
-  cleanupTagGroups();state.selectedStudyId=cfg.selectedStudyId||'ALL';state.selectedLocation=cfg.selectedLocation||'ALL';state.selectedShift=cfg.selectedShift||'ALL';state.studySortMode=cfg.studySortMode||'LOAD';state.repositoryAnalysisId=analysis.repository?.recordId||entry.pathParts.at(-2)||'';
+  const restoredStudy=aeFindStudyBySavedRef(cfg.selectedStudyRef);
+  cleanupTagGroups();state.selectedStudyId=restoredStudy?.id||'ALL';state.selectedLocation=cfg.selectedLocation||'ALL';state.selectedShift=cfg.selectedShift||'ALL';state.studySortMode=cfg.studySortMode||'LOAD';state.repositoryAnalysisId=analysis.repository?.recordId||entry.pathParts.at(-2)||'';state.analysisCreatedAt=analysis.analysisInfo?.createdAt||analysis.generatedAt||'';aeApplyAnalysisInfo(analysis.analysisInfo||{analysisDate:analysis.generatedAt?.slice(0,10)||''});
   recalculateAndRender();
-  aeRepoStatus(`Opened analysis ${state.repositoryAnalysisId} with ${files.length} repository source stud${files.length===1?'y':'ies'} restored.`,'good')
+  const label=aeAnalysisInfoFromUi().analysisName||state.repositoryAnalysisId,unavailableCount=resolved.missing.length+(loadResult.failed||0),missingNote=unavailableCount?` ${unavailableCount} source stud${unavailableCount===1?'y was':'ies were'} unavailable and not loaded.`:'';
+  aeRepoStatus(`Opened ${label} • ${loadResult.loaded} repository source stud${loadResult.loaded===1?'y':'ies'} restored.${missingNote}`,unavailableCount?'warn':'good')
 }
 async function aeMultiOpenAnalysis(){
   const root=await aeRepoGetRoot({interactive:true}),base=await aeRepoEnsureDir(root,[AE_REPO_ROUTE],true);
   aeRepoStatus('Scanning saved Multi-Study analyses…','warn');
-  const entries=await aeRepoScan(base,name=>/__ANALYSIS\.json$/i.test(name)),records=[];
-  for(const e of entries){try{const p=await aeRepoJson(e);if(p?.schema!=='AbelEngineering.MultiStudyDowntimeAnalysis')continue;const id=p.repository?.recordId||e.pathParts.at(-2)||e.name;records.push({entry:e,title:`${id} • ${(p.sourceStudies?.length||p.sourceFiles?.length||0)} source studies`,meta:[p.generatedAt?.slice(0,10),...(p.sourceStudies||[]).slice(0,2).map(x=>`${x.location||''} ${x.line||''}`)].filter(Boolean).join(' • '),search:JSON.stringify(p.sourceStudies||p.sourceFiles||[])})}catch(err){console.warn('Skipping unreadable saved analysis',e.name,err)}}
-  records.sort((a,b)=>b.meta.localeCompare(a.meta));
-  aeRepoStatus(`Found ${records.length} saved analysis record${records.length===1?'':'s'}.`,'good');
+  const entries=await aeRepoScan(base,name=>/__ANALYSIS\.json$/i.test(name)),records=[];let unreadable=0;
+  for(const e of entries){try{const p=await aeRepoJson(e);if(p?.schema!=='AbelEngineering.MultiStudyDowntimeAnalysis')continue;const id=p.repository?.recordId||e.pathParts.at(-2)||e.name,info=p.analysisInfo||{},name=String(info.analysisName||'').trim()||`Legacy analysis ${id}`,organizer=String(info.organizer||'').trim(),date=String(info.analysisDate||p.generatedAt?.slice(0,10)||'').trim(),description=String(info.description||'').trim(),count=(p.sourceStudies?.length||p.sourceFiles?.length||0);records.push({entry:e,title:`${name} • ${count} source stud${count===1?'y':'ies'}`,meta:[date,organizer,id,description].filter(Boolean).join(' • '),search:JSON.stringify({analysisName:name,organizer,date,description,recordId:id,sourceStudies:p.sourceStudies||p.sourceFiles||[]}),sortKey:`${date}|${p.generatedAt||''}`})}catch(err){unreadable+=1;console.warn('Skipping unreadable saved analysis',e.name,err)}}
+  records.sort((a,b)=>String(b.sortKey||'').localeCompare(String(a.sortKey||''))||b.meta.localeCompare(a.meta));
+  aeRepoStatus(`Found ${records.length} saved analysis record${records.length===1?'':'s'}.${unreadable?` ${unreadable} unreadable analysis file${unreadable===1?' was':'s were'} skipped.`:''}`,unreadable?'warn':'good');
   aeRepoShowBrowser(records,{title:'Open Saved Multi-Study Downtime Analysis',onOpen:async rows=>aeMultiApplyAnalysis(rows[0].entry)})
 }
 document.getElementById('aeRepoConnect')?.addEventListener('click',()=>aeRepoConnect().catch(e=>{aeRepoStatus(e.message||String(e),'bad');alert(e.message||e)}));
 document.getElementById('aeRepoLoadSources')?.addEventListener('click',()=>aeMultiLoadSources().catch(e=>{aeRepoStatus(`Load failed: ${e.message||e}`,'bad');alert(e.message||e)}));
 document.getElementById('aeRepoSave')?.addEventListener('click',()=>aeMultiSave().catch(e=>{aeRepoStatus(`Save failed: ${e.message||e}`,'bad');alert(e.message||e)}));
-document.getElementById('aeRepoOpenAnalysis')?.addEventListener('click',()=>aeMultiOpenAnalysis().catch(e=>{aeRepoStatus(`Open failed: ${e.message||e}`,'bad');alert(e.message||e)}));
+document.getElementById('aeRepoOpenAnalysis')?.addEventListener('click',()=>aeMultiOpenAnalysis().catch(e=>{console.error('Open saved analysis failed.',e);aeRepoStatus(`Open failed: ${e.message||e}`,'bad');alert(e.message||e)}));
+aeInitializeAnalysisIdentity();
 aeRepoBootstrap();
 
 
