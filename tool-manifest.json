@@ -1,0 +1,73 @@
+{
+  "schema": "AbelEngineering.ToolManifest",
+  "schemaVersion": "1.0",
+  "tool": {
+    "id": "multi-study-downtime-totalizer",
+    "name": "Multi-Study Downtime Totalizer",
+    "shortName": "MSDT",
+    "category": "Study Analysis",
+    "status": "Beta",
+    "version": "Current testbench build",
+    "description": "Combine multiple saved downtime studies into consolidated Pareto, study-level reference, and calculation views.",
+    "tags": [
+      "Analytics",
+      "Downtime",
+      "Multi-Study"
+    ],
+    "features": [
+      "Multiple JSON study import",
+      "Folder-based study loading",
+      "Combined reason-code Pareto",
+      "Study slicer",
+      "Loaded-study reference",
+      "Calculation / aggregation view",
+      "Excel-oriented export"
+    ]
+  },
+  "links": {
+    "application": "https://rabel-626.github.io/Downtime-Tracker-Multi-Study-Totalizer/",
+    "repository": "https://github.com/rabel-626/Downtime-Tracker-Multi-Study-Totalizer"
+  },
+  "documents": [
+    {
+      "id": "quick-start",
+      "type": "quick-start",
+      "title": "Quick Start",
+      "file": "docs/quick-start/QS-AE-MSDT-001_Quick-Start.md",
+      "description": "Load multiple downtime studies and review the consolidated Pareto.",
+      "order": 10
+    },
+    {
+      "id": "work-instructions",
+      "type": "work-instruction",
+      "title": "Work Instructions",
+      "file": "docs/work-instructions/WI-AE-MSDT-001_Analysis-Procedure.md",
+      "description": "Detailed procedure for multi-study downtime analysis.",
+      "order": 20
+    },
+    {
+      "id": "reference",
+      "type": "reference",
+      "title": "Aggregation Method",
+      "file": "docs/reference/REF-AE-MSDT-001_Aggregation-Method.md",
+      "description": "Reference for combining studies and interpreting totals.",
+      "order": 30
+    },
+    {
+      "id": "limitations",
+      "type": "limitations",
+      "title": "Limitations",
+      "file": "docs/limitations/LIM-AE-MSDT-001_Limitations.md",
+      "description": "Known boundaries for comparison across different studies.",
+      "order": 40
+    },
+    {
+      "id": "data",
+      "type": "data",
+      "title": "Data & Privacy",
+      "file": "docs/data/DATA-AE-MSDT-001_Data-Handling.md",
+      "description": "How imported study files are read and handled.",
+      "order": 50
+    }
+  ]
+}
